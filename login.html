@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sign in to BlogSphere to access your dashboard and manage your stories.">
+  <title>Sign in — BlogSphere</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Outfit:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body data-page="login">
+
+  <!-- Skip link -->
+  <a class="skip-link" href="#login-form">Skip to sign-in form</a>
+
+  <!-- Page loader -->
+  <div id="page-loader" class="page-loader" aria-hidden="true">
+    <div class="loader-mark"><span></span><p>Loading…</p></div>
+  </div>
+
+  <!-- No-JS warning -->
+  <noscript>
+    <p class="noscript">BlogSphere requires JavaScript. Please enable it in your browser settings.</p>
+  </noscript>
+
+  <!-- Header -->
+  <header id="site-header" class="site-header" role="banner"></header>
+
+  <!-- Main -->
+  <main id="main-content">
+    <div class="auth-shell">
+
+      <!-- Sign-in card -->
+      <div class="auth-card">
+        <div class="auth-copy">
+          <p class="eyebrow">Welcome back</p>
+          <h1>Sign in to BlogSphere</h1>
+          <p class="lede">Your stories and dashboard are waiting.</p>
+        </div>
+
+        <!-- Alert banner (login errors) -->
+        <div id="login-alert" class="alert" role="alert" hidden></div>
+
+        <!-- Login panel -->
+        <div id="login-panel">
+          <form id="login-form" novalidate autocomplete="on">
+            <div class="field">
+              <label for="login-email">Email address</label>
+              <input
+                id="login-email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+                placeholder="you@example.com"
+                aria-describedby="email-error"
+              >
+              <small class="field-error" id="email-error" data-error-for="email" role="alert"></small>
+            </div>
+
+            <div class="field">
+              <label for="login-password">Password</label>
+              <div class="password-field">
+                <input
+                  id="login-password"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  required
+                  placeholder="Your password"
+                  aria-describedby="password-error"
+                >
+                <button
+                  class="ghost-eye"
+                  type="button"
+                  data-toggle-password="login-password"
+                  aria-label="Show password"
+                  aria-pressed="false"
+                >
+                  <i class="fa-regular fa-eye" aria-hidden="true"></i>
+                </button>
+              </div>
+              <small class="field-error" id="password-error" data-error-for="password" role="alert"></small>
+            </div>
+
+            <div class="form-row">
+              <label class="checkbox">
+                <input name="remember" type="checkbox" id="remember-me">
+                Keep me signed in
+              </label>
+              <button class="auth-links" type="button" id="forgot-open" style="border:0;background:none;color:var(--accent-strong);font-weight:700;padding:0;cursor:pointer;">
+                Forgot password?
+              </button>
+            </div>
+
+            <button class="btn btn-primary" type="submit" style="width:100%;">
+              Sign in
+            </button>
+          </form>
+
+          <div class="auth-links" style="margin-top:1rem;text-align:center;">
+            Don't have an account? <a href="register.html">Create one free</a>
+          </div>
+        </div>
+
+        <!-- Forgot password panel -->
+        <div id="reset-panel" hidden>
+
+          <!-- Step 1: enter email -->
+          <form id="reset-request" novalidate>
+            <p style="color:var(--muted);margin-bottom:1rem;">Enter your account email and we'll let you set a new password.</p>
+            <div class="field">
+              <label for="reset-email">Account email</label>
+              <input
+                id="reset-email"
+                name="email"
+                type="email"
+                required
+                placeholder="you@example.com"
+                aria-describedby="reset-email-error"
+              >
+              <small class="field-error" id="reset-email-error" data-error-for="email" role="alert"></small>
+            </div>
+            <div style="display:flex;gap:0.6rem;margin-top:0.4rem;">
+              <button class="btn btn-ghost" type="button" data-back-login>Back</button>
+              <button class="btn btn-primary" type="submit" style="flex:1;">Continue</button>
+            </div>
+          </form>
+
+          <!-- Step 2: set new password -->
+          <form id="reset-confirm" novalidate hidden>
+            <p style="color:var(--muted);margin-bottom:1rem;">Choose a new password for your account.</p>
+            <div class="field">
+              <label for="new-password">New password</label>
+              <div class="password-field">
+                <input
+                  id="new-password"
+                  name="password"
+                  type="password"
+                  required
+                  placeholder="At least 8 characters"
+                  aria-describedby="new-pass-error"
+                >
+                <button
+                  class="ghost-eye"
+                  type="button"
+                  data-toggle-password="new-password"
+                  aria-label="Show password"
+                  aria-pressed="false"
+                >
+                  <i class="fa-regular fa-eye" aria-hidden="true"></i>
+                </button>
+              </div>
+              <small class="field-error" id="new-pass-error" data-error-for="password" role="alert"></small>
+            </div>
+            <div class="field">
+              <label for="confirm-new-password">Confirm new password</label>
+              <div class="password-field">
+                <input
+                  id="confirm-new-password"
+                  name="confirmPassword"
+                  type="password"
+                  required
+                  placeholder="Repeat your new password"
+                  aria-describedby="confirm-pass-error"
+                >
+                <button
+                  class="ghost-eye"
+                  type="button"
+                  data-toggle-password="confirm-new-password"
+                  aria-label="Show password"
+                  aria-pressed="false"
+                >
+                  <i class="fa-regular fa-eye" aria-hidden="true"></i>
+                </button>
+              </div>
+              <small class="field-error" id="confirm-pass-error" data-error-for="confirmPassword" role="alert"></small>
+            </div>
+            <div style="display:flex;gap:0.6rem;margin-top:0.4rem;">
+              <button class="btn btn-ghost" type="button" data-back-login>Back</button>
+              <button class="btn btn-primary" type="submit" style="flex:1;">Update password</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+      <!-- Aside panel -->
+      <aside class="auth-aside" aria-label="About BlogSphere">
+        <p class="eyebrow">BlogSphere</p>
+        <blockquote>
+          "The best writing platforms get out of the way. You write, they publish."
+        </blockquote>
+        <p>Share your ideas with the world. Your stories, your audience, your platform.</p>
+
+        <div class="demo-note">
+          <strong>Try the demo account</strong>
+          <span>Email: demo@blogsphere.com</span>
+          <span>Password: Demo1234!</span>
+          <button
+            id="demo-login"
+            class="btn btn-primary"
+            type="button"
+            style="margin-top:0.9rem;width:100%;"
+          >
+            <i class="fa-solid fa-bolt" aria-hidden="true"></i>
+            Sign in with demo account
+          </button>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer id="site-footer" class="site-footer" role="contentinfo"></footer>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

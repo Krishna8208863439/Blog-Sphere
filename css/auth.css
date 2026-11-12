@@ -1,0 +1,60 @@
+/* Sign-in and registration layout. */
+
+.auth-shell {
+  width: min(1080px, calc(100% - 2rem));
+  margin: 2rem auto 3rem;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 1.2rem;
+  align-items: stretch;
+}
+
+.auth-card, .auth-aside {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  padding: 1.6rem;
+  box-shadow: var(--shadow);
+}
+
+.auth-copy h1 { font-size: clamp(2.3rem, 4vw, 3.4rem); margin: 0.45rem 0 0.6rem; }
+.auth-links { margin-top: 1rem; color: var(--muted); }
+.auth-links button {
+  border: 0;
+  background: none;
+  color: var(--accent-strong);
+  font-weight: 700;
+  padding: 0;
+}
+.auth-links a { color: var(--accent-strong); font-weight: 700; }
+
+.form-row { display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; margin: 0.2rem 0 1rem; }
+
+.auth-aside {
+  background:
+    radial-gradient(500px 240px at 20% 10%, rgba(142, 224, 198, 0.35), transparent 60%),
+    var(--ink);
+  color: #f6f3ee;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 560px;
+}
+
+.auth-aside .eyebrow { color: #8ee0c6; }
+.auth-aside blockquote {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  margin: 0.7rem 0 1rem;
+}
+.auth-aside p { color: rgba(246, 243, 238, 0.78); max-width: 34ch; }
+.demo-note {
+  margin-top: 1.4rem;
+  padding: 0.9rem 1rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.demo-note strong { display: block; margin-bottom: 0.2rem; color: #fff; }
+.demo-note span { display: block; font-family: ui-monospace, monospace; font-size: 0.92rem; }

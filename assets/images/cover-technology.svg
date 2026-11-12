@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Technology cover">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0e1c2f"/>
+      <stop offset="1" stop-color="#123f45"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <g fill="none" stroke="#7ddec0" stroke-width="2" opacity="0.35">
+    <path d="M0 180h1600M0 360h1600M0 540h1600M0 720h1600M0 900h1600"/>
+    <path d="M200 0v1000M480 0v1000M760 0v1000M1040 0v1000M1320 0v1000"/>
+  </g>
+  <circle cx="1180" cy="300" r="180" fill="none" stroke="#d7fff3" stroke-width="18" opacity="0.8"/>
+  <circle cx="1180" cy="300" r="84" fill="#7ddec0"/>
+  <rect x="160" y="620" width="420" height="18" rx="9" fill="#ffffff" opacity="0.85"/>
+  <rect x="160" y="670" width="280" height="18" rx="9" fill="#7ddec0" opacity="0.9"/>
+  <rect x="160" y="250" width="70" height="220" rx="16" fill="#ffffff" opacity="0.12"/>
+  <rect x="250" y="180" width="70" height="290" rx="16" fill="#7ddec0" opacity="0.75"/>
+  <rect x="340" y="320" width="70" height="150" rx="16" fill="#ffffff" opacity="0.28"/>
+</svg>

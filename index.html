@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BlogSphere — a quiet place for finished thoughts. Discover stories about technology, AI, programming, lifestyle, and education.">
+  <title>BlogSphere — Discover great stories</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Outfit:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body data-page="home">
+
+  <!-- Skip link for keyboard users -->
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <!-- Page loader -->
+  <div id="page-loader" class="page-loader" aria-hidden="true">
+    <div class="loader-mark">
+      <span></span>
+      <p>Loading…</p>
+    </div>
+  </div>
+
+  <!-- No-JS warning -->
+  <noscript>
+    <p class="noscript">BlogSphere requires JavaScript to work. Please enable it in your browser settings.</p>
+  </noscript>
+
+  <!-- Header (injected by main.js) -->
+  <header id="site-header" class="site-header" role="banner"></header>
+
+  <!-- Main content -->
+  <main id="main-content">
+
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-inner">
+        <p class="eyebrow">Welcome to BlogSphere</p>
+        <h1 id="hero-title">Stories worth <em>reading</em></h1>
+        <p class="lede">A quiet corner of the internet for ideas on technology, creativity, and the craft of making things. No noise. Just writing.</p>
+
+        <form class="hero-search" id="hero-search" role="search" aria-label="Search stories">
+          <label class="sr-only" for="hero-q">Search stories</label>
+          <input id="hero-q" name="q" type="search" placeholder="Search stories, authors, categories…" autocomplete="off">
+          <button class="btn btn-primary" type="submit">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            Search
+          </button>
+        </form>
+
+        <div class="hero-stats" aria-label="Site statistics">
+          <div><strong id="story-count">0</strong> <span>published stories</span></div>
+          <div><strong>5</strong> <span>categories</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category filter bar -->
+    <section id="stories" class="section" aria-label="Browse stories">
+      <div class="section">
+        <div class="section-head">
+          <h2>Explore</h2>
+          <p class="summary" id="result-summary" aria-live="polite" aria-atomic="true"></p>
+        </div>
+
+        <!-- Category chips -->
+        <div class="chip-row" id="category-bar" role="group" aria-label="Filter by category"></div>
+      </div>
+
+      <!-- Featured section -->
+      <div class="section" id="featured-section" hidden>
+        <div class="section-head">
+          <h2>Featured stories</h2>
+        </div>
+        <div class="featured-grid" id="featured-grid"></div>
+      </div>
+
+      <!-- Latest articles -->
+      <div class="section" id="latest-section">
+        <div class="section-head">
+          <h2 id="latest-title">Latest articles</h2>
+        </div>
+        <div class="card-grid" id="latest-grid"></div>
+      </div>
+
+      <!-- Empty state -->
+      <div id="home-empty" role="status"></div>
+    </section>
+
+  </main>
+
+  <!-- Footer (injected by main.js) -->
+  <footer id="site-footer" class="site-footer" role="contentinfo"></footer>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/blogs.js"></script>
+</body>
+</html>

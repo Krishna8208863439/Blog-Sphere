@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create a free BlogSphere account and start publishing your stories today.">
+  <title>Create an account — BlogSphere</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Outfit:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body data-page="register">
+
+  <!-- Skip link -->
+  <a class="skip-link" href="#register-form">Skip to registration form</a>
+
+  <!-- Page loader -->
+  <div id="page-loader" class="page-loader" aria-hidden="true">
+    <div class="loader-mark"><span></span><p>Loading…</p></div>
+  </div>
+
+  <!-- No-JS warning -->
+  <noscript>
+    <p class="noscript">BlogSphere requires JavaScript. Please enable it in your browser settings.</p>
+  </noscript>
+
+  <!-- Header -->
+  <header id="site-header" class="site-header" role="banner"></header>
+
+  <!-- Main -->
+  <main id="main-content">
+    <div class="auth-shell">
+
+      <!-- Registration card -->
+      <div class="auth-card">
+        <div class="auth-copy">
+          <p class="eyebrow">Get started — it's free</p>
+          <h1>Create your account</h1>
+          <p class="lede">Join BlogSphere and start publishing your ideas today.</p>
+        </div>
+
+        <!-- Alert banner -->
+        <div id="register-alert" class="alert" role="alert" hidden></div>
+
+        <form id="register-form" novalidate autocomplete="on">
+
+          <!-- Full name -->
+          <div class="field">
+            <label for="reg-fullName">Full name</label>
+            <input
+              id="reg-fullName"
+              name="fullName"
+              type="text"
+              autocomplete="name"
+              required
+              placeholder="Jane Smith"
+              aria-describedby="fullName-error"
+            >
+            <small class="field-error" id="fullName-error" data-error-for="fullName" role="alert"></small>
+          </div>
+
+          <!-- Email -->
+          <div class="field">
+            <label for="reg-email">Email address</label>
+            <input
+              id="reg-email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+              placeholder="you@example.com"
+              aria-describedby="reg-email-error"
+            >
+            <small class="field-error" id="reg-email-error" data-error-for="email" role="alert"></small>
+          </div>
+
+          <!-- Username -->
+          <div class="field">
+            <label for="reg-username">Username</label>
+            <input
+              id="reg-username"
+              name="username"
+              type="text"
+              autocomplete="username"
+              required
+              placeholder="jane_smith"
+              aria-describedby="username-error username-hint"
+            >
+            <small class="hint" id="username-hint">3–20 letters, numbers, or underscores.</small>
+            <small class="field-error" id="username-error" data-error-for="username" role="alert"></small>
+          </div>
+
+          <!-- Password -->
+          <div class="field">
+            <label for="reg-password">Password</label>
+            <div class="password-field">
+              <input
+                id="reg-password"
+                name="password"
+                type="password"
+                autocomplete="new-password"
+                required
+                placeholder="At least 8 characters"
+                aria-describedby="reg-password-error strength-label"
+              >
+              <button
+                class="ghost-eye"
+                type="button"
+                data-toggle-password="reg-password"
+                aria-label="Show password"
+                aria-pressed="false"
+              >
+                <i class="fa-regular fa-eye" aria-hidden="true"></i>
+              </button>
+            </div>
+            <!-- Password strength meter -->
+            <div class="strength" id="strength-meter" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Password strength">
+              <span></span>
+            </div>
+            <small id="strength-label" style="color:var(--muted)">Use 8 or more characters with a letter and a number.</small>
+            <small class="field-error" id="reg-password-error" data-error-for="password" role="alert"></small>
+          </div>
+
+          <!-- Confirm password -->
+          <div class="field">
+            <label for="reg-confirm-password">Confirm password</label>
+            <div class="password-field">
+              <input
+                id="reg-confirm-password"
+                name="confirmPassword"
+                type="password"
+                autocomplete="new-password"
+                required
+                placeholder="Repeat your password"
+                aria-describedby="confirm-error"
+              >
+              <button
+                class="ghost-eye"
+                type="button"
+                data-toggle-password="reg-confirm-password"
+                aria-label="Show password"
+                aria-pressed="false"
+              >
+                <i class="fa-regular fa-eye" aria-hidden="true"></i>
+              </button>
+            </div>
+            <small class="field-error" id="confirm-error" data-error-for="confirmPassword" role="alert"></small>
+          </div>
+
+          <button class="btn btn-primary" type="submit" style="width:100%;margin-top:0.4rem;">
+            Create account
+          </button>
+        </form>
+
+        <div class="auth-links" style="margin-top:1rem;text-align:center;">
+          Already have an account? <a href="login.html">Sign in</a>
+        </div>
+      </div>
+
+      <!-- Aside -->
+      <aside class="auth-aside" aria-label="Why join BlogSphere">
+        <p class="eyebrow">Why BlogSphere?</p>
+        <blockquote>
+          "A place to think out loud — and be heard."
+        </blockquote>
+        <p>Publish across five categories. Keep drafts private until you're ready. Your data lives in this browser.</p>
+
+        <div class="demo-note">
+          <strong>Already signed up?</strong>
+          <span>Head over to the sign-in page and use your registered email and password.</span>
+          <a href="login.html" class="btn btn-primary" style="margin-top:0.9rem;display:inline-flex;width:100%;justify-content:center;">
+            <i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i>
+            Go to sign in
+          </a>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer id="site-footer" class="site-footer" role="contentinfo"></footer>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Programming cover">
+  <rect width="1600" height="1000" fill="#121816"/>
+  <rect x="120" y="140" width="1360" height="720" rx="36" fill="#1c2622"/>
+  <circle cx="190" cy="210" r="14" fill="#f0a3a3"/>
+  <circle cx="236" cy="210" r="14" fill="#f3d38a"/>
+  <circle cx="282" cy="210" r="14" fill="#8ee0c6"/>
+  <g fill="#8ee0c6" font-family="Georgia, serif" font-size="54">
+    <text x="180" y="360">function craft(story) {</text>
+    <text x="230" y="450">return story.trim();</text>
+    <text x="180" y="540">}</text>
+  </g>
+  <rect x="180" y="640" width="520" height="16" rx="8" fill="#8ee0c6" opacity="0.35"/>
+  <rect x="180" y="680" width="340" height="16" rx="8" fill="#ffffff" opacity="0.18"/>
+</svg>

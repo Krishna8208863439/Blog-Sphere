@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BlogSphere dashboard — manage your stories, profile, and account settings.">
+  <title>Dashboard — BlogSphere</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Outfit:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body data-page="dashboard">
+
+  <!-- Skip link -->
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <!-- Page loader -->
+  <div id="page-loader" class="page-loader" aria-hidden="true">
+    <div class="loader-mark"><span></span><p>Loading…</p></div>
+  </div>
+
+  <!-- No-JS warning -->
+  <noscript>
+    <p class="noscript">BlogSphere requires JavaScript. Please enable it in your browser settings.</p>
+  </noscript>
+
+  <!-- App shell -->
+  <div class="app-shell" id="app-shell">
+
+    <!-- Mobile sidebar backdrop -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop" aria-hidden="true"></div>
+
+    <!-- Sidebar (injected by dashboard.js) -->
+    <aside id="sidebar" class="sidebar" aria-label="Dashboard navigation"></aside>
+
+    <!-- Main area -->
+    <div class="app-main" id="main-content">
+
+      <!-- Top bar -->
+      <header class="app-topbar" role="banner">
+        <!-- Mobile toggle -->
+        <button
+          class="sidebar-toggle icon-btn"
+          type="button"
+          aria-expanded="false"
+          aria-controls="sidebar"
+          aria-label="Open navigation"
+        >
+          <i class="fa-solid fa-bars" aria-hidden="true"></i>
+        </button>
+
+        <h1 id="view-title">Dashboard</h1>
+
+        <div class="topbar-actions">
+          <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch to dark mode">
+            <i class="fa-solid fa-moon" aria-hidden="true"></i>
+          </button>
+          <a class="btn btn-primary" href="create-blog.html">
+            <i class="fa-solid fa-pen-nib" aria-hidden="true"></i>
+            New story
+          </a>
+        </div>
+      </header>
+
+      <!-- Dashboard root (views toggled by JS) -->
+      <div id="dashboard-root">
+
+        <!-- ═══════════════════════════════════════
+             VIEW: Overview
+        ════════════════════════════════════════ -->
+        <div data-view="overview">
+          <p class="welcome" id="welcome" aria-live="polite"></p>
+
+          <!-- Stats grid -->
+          <div class="stat-grid" aria-label="Story statistics">
+            <div class="stat">
+              <span>Total stories</span>
+              <strong id="stat-total" aria-live="polite">0</strong>
+            </div>
+            <div class="stat">
+              <span>Published</span>
+              <strong id="stat-published" aria-live="polite">0</strong>
+            </div>
+            <div class="stat">
+              <span>Drafts</span>
+              <strong id="stat-draft" aria-live="polite">0</strong>
+            </div>
+          </div>
+
+          <!-- Recent posts -->
+          <div class="panel" aria-label="Recent stories">
+            <div class="section-head" style="padding:0 0.2rem 0.6rem;">
+              <h2 style="font-size:1.3rem;">Recent stories</h2>
+              <a class="btn btn-ghost" href="dashboard.html#posts" style="font-size:0.9rem;">
+                View all <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+              </a>
+            </div>
+            <div id="recent-list" role="list"></div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════
+             VIEW: Library (My posts)
+        ════════════════════════════════════════ -->
+        <div data-view="posts" hidden>
+          <div class="section-head" style="margin-bottom:0.6rem;">
+            <div>
+              <h2 style="font-size:1.5rem;">My stories</h2>
+              <p class="summary" id="library-count" aria-live="polite" aria-atomic="true"></p>
+            </div>
+            <a class="btn btn-primary" href="create-blog.html">
+              <i class="fa-solid fa-plus" aria-hidden="true"></i>
+              New story
+            </a>
+          </div>
+
+          <!-- Filters -->
+          <div class="filters" role="search" aria-label="Filter stories">
+            <label class="sr-only" for="post-search">Search your stories</label>
+            <input
+              id="post-search"
+              type="search"
+              placeholder="Search your stories…"
+              style="flex:1;"
+              autocomplete="off"
+            >
+            <label class="sr-only" for="post-status">Filter by status</label>
+            <select id="post-status" aria-label="Filter by status">
+              <option value="all">All statuses</option>
+              <option value="published">Published</option>
+              <option value="draft">Drafts</option>
+            </select>
+            <label class="sr-only" for="post-category">Filter by category</label>
+            <select id="post-category" aria-label="Filter by category">
+              <option value="all">All categories</option>
+            </select>
+          </div>
+
+          <div class="panel">
+            <div id="library-list" role="list"></div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════
+             VIEW: Profile
+        ════════════════════════════════════════ -->
+        <div data-view="profile" hidden>
+          <h2 style="font-family:var(--font-display);font-size:1.6rem;margin-bottom:1rem;">Account &amp; profile</h2>
+
+          <div class="profile-grid">
+
+            <!-- Profile form -->
+            <div class="stack">
+              <div class="panel">
+                <h3 style="font-weight:700;margin-bottom:1rem;">Edit profile</h3>
+                <form id="profile-form" novalidate autocomplete="on">
+                  <div class="field">
+                    <label for="profile-fullName">Full name</label>
+                    <input id="profile-fullName" name="fullName" type="text" required autocomplete="name">
+                    <small class="field-error" data-error-for="fullName" role="alert"></small>
+                  </div>
+                  <div class="field">
+                    <label for="profile-username">Username</label>
+                    <input id="profile-username" name="username" type="text" required autocomplete="username">
+                    <small class="field-error" data-error-for="username" role="alert"></small>
+                  </div>
+                  <div class="field">
+                    <label for="profile-email">Email address</label>
+                    <input id="profile-email" name="email" type="email" readonly disabled autocomplete="email" style="opacity:0.65;">
+                    <small class="hint">Email cannot be changed.</small>
+                  </div>
+                  <div class="field">
+                    <label for="profile-bio">Bio <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+                    <textarea id="profile-bio" name="bio" placeholder="A short description shown on your stories." maxlength="280" rows="3"></textarea>
+                    <small class="field-error" data-error-for="bio" role="alert"></small>
+                  </div>
+                  <button class="btn btn-primary" type="submit">Save changes</button>
+                </form>
+              </div>
+
+              <!-- Change password -->
+              <div class="panel">
+                <h3 style="font-weight:700;margin-bottom:1rem;">Change password</h3>
+                <form id="password-form" novalidate autocomplete="on">
+                  <div class="field">
+                    <label for="current-password">Current password</label>
+                    <div class="password-field">
+                      <input id="current-password" name="currentPassword" type="password" required autocomplete="current-password" placeholder="Your current password">
+                      <button class="ghost-eye" type="button" data-toggle-password="current-password" aria-label="Show password" aria-pressed="false">
+                        <i class="fa-regular fa-eye" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                    <small class="field-error" data-error-for="currentPassword" role="alert"></small>
+                  </div>
+                  <div class="field">
+                    <label for="new-pass">New password</label>
+                    <div class="password-field">
+                      <input id="new-pass" name="newPassword" type="password" required autocomplete="new-password" placeholder="At least 8 characters">
+                      <button class="ghost-eye" type="button" data-toggle-password="new-pass" aria-label="Show password" aria-pressed="false">
+                        <i class="fa-regular fa-eye" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                    <small class="field-error" data-error-for="newPassword" role="alert"></small>
+                  </div>
+                  <div class="field">
+                    <label for="confirm-pass">Confirm new password</label>
+                    <div class="password-field">
+                      <input id="confirm-pass" name="confirmPassword" type="password" required autocomplete="new-password" placeholder="Repeat your new password">
+                      <button class="ghost-eye" type="button" data-toggle-password="confirm-pass" aria-label="Show password" aria-pressed="false">
+                        <i class="fa-regular fa-eye" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                    <small class="field-error" data-error-for="confirmPassword" role="alert"></small>
+                  </div>
+                  <button class="btn btn-primary" type="submit">Update password</button>
+                </form>
+              </div>
+            </div>
+
+            <!-- Member card -->
+            <div>
+              <div class="member-card">
+                <div class="avatar" id="profile-avatar" aria-hidden="true" style="width:64px;height:64px;font-size:1.4rem;">?</div>
+                <strong id="profile-name" style="font-size:1.3rem;display:block;margin:0.4rem 0 0.1rem;"></strong>
+                <span id="profile-handle" style="color:rgba(246,243,238,0.65);font-size:0.9rem;"></span>
+                <p id="profile-bio-display" style="margin-top:0.6rem;font-size:0.95rem;"></p>
+                <small id="member-since" style="display:block;margin-top:0.9rem;color:rgba(246,243,238,0.5);"></small>
+              </div>
+
+              <div class="panel" style="margin-top:1rem;">
+                <h3 style="font-weight:700;margin-bottom:0.8rem;">Quick links</h3>
+                <div style="display:grid;gap:0.4rem;">
+                  <a href="index.html" class="btn btn-ghost" style="justify-content:flex-start;gap:0.6rem;">
+                    <i class="fa-solid fa-house" aria-hidden="true"></i> View public site
+                  </a>
+                  <a href="create-blog.html" class="btn btn-ghost" style="justify-content:flex-start;gap:0.6rem;">
+                    <i class="fa-solid fa-pen-nib" aria-hidden="true"></i> Write a new story
+                  </a>
+                  <button class="btn btn-ghost" type="button" data-logout style="justify-content:flex-start;gap:0.6rem;color:var(--danger);">
+                    <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i> Log out
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- /dashboard-root -->
+    </div><!-- /app-main -->
+  </div><!-- /app-shell -->
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/dashboard.js"></script>
+
+  <!-- Sync the profile sidebar avatar after the page renders -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var user = window.BlogStore && BlogStore.currentUser();
+      if (!user) return;
+      var av = document.getElementById('profile-avatar');
+      var nm = document.getElementById('profile-name');
+      var hd = document.getElementById('profile-handle');
+      var bi = document.getElementById('profile-bio-display');
+      if (av) av.textContent = BlogUI.initial(user.fullName);
+      if (nm) nm.textContent = user.fullName;
+      if (hd) hd.textContent = '@' + user.username;
+      if (bi) bi.textContent = user.bio || '';
+    });
+  </script>
+</body>
+</html>

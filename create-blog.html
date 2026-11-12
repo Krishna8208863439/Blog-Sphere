@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Write and publish a new story on BlogSphere.">
+  <title>New story — BlogSphere</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Outfit:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body data-page="editor">
+
+  <!-- Skip link -->
+  <a class="skip-link" href="#blog-title">Skip to editor</a>
+
+  <!-- Page loader -->
+  <div id="page-loader" class="page-loader" aria-hidden="true">
+    <div class="loader-mark"><span></span><p>Loading…</p></div>
+  </div>
+
+  <!-- No-JS warning -->
+  <noscript>
+    <p class="noscript">BlogSphere requires JavaScript. Please enable it in your browser settings.</p>
+  </noscript>
+
+  <!-- App shell -->
+  <div class="app-shell" id="app-shell">
+
+    <!-- Sidebar backdrop -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop" aria-hidden="true"></div>
+
+    <!-- Sidebar (injected by dashboard.js) -->
+    <aside id="sidebar" class="sidebar" aria-label="Dashboard navigation"></aside>
+
+    <!-- Editor main -->
+    <div class="app-main">
+
+      <!-- Top bar -->
+      <header class="app-topbar" role="banner">
+        <button
+          class="sidebar-toggle icon-btn"
+          type="button"
+          aria-expanded="false"
+          aria-controls="sidebar"
+          aria-label="Open navigation"
+        >
+          <i class="fa-solid fa-bars" aria-hidden="true"></i>
+        </button>
+
+        <h1 id="view-title" style="font-size:1.3rem;">Editor</h1>
+
+        <div class="topbar-actions">
+          <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch to dark mode">
+            <i class="fa-solid fa-moon" aria-hidden="true"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Editor header -->
+      <div class="editor-head">
+        <h1 id="editor-heading">New story</h1>
+        <p class="editor-status" id="editor-status">New story</p>
+      </div>
+
+      <!-- Editor layout: form + sidebar panel -->
+      <div class="editor-layout">
+
+        <!-- Left: form -->
+        <form id="blog-form" novalidate>
+          <!-- Title -->
+          <div class="field">
+            <label for="blog-title">Story title <span style="color:var(--danger)">*</span></label>
+            <input
+              id="blog-title"
+              name="title"
+              type="text"
+              required
+              maxlength="140"
+              placeholder="Give your story a title"
+              aria-describedby="title-error"
+            >
+            <small class="field-error" id="title-error" data-error-for="title" role="alert"></small>
+          </div>
+
+          <!-- Description -->
+          <div class="field">
+            <label for="blog-description">Short description <span style="color:var(--danger)">*</span></label>
+            <textarea
+              id="blog-description"
+              name="description"
+              rows="2"
+              maxlength="300"
+              placeholder="A one- or two-sentence teaser for your story"
+              aria-describedby="description-error"
+            ></textarea>
+            <small class="field-error" id="description-error" data-error-for="description" role="alert"></small>
+          </div>
+
+          <!-- Category -->
+          <div class="field">
+            <label for="blog-category">Category <span style="color:var(--danger)">*</span></label>
+            <select
+              id="blog-category"
+              name="category"
+              required
+              aria-describedby="category-error"
+            >
+              <!-- Options populated by JS -->
+            </select>
+            <small class="field-error" id="category-error" data-error-for="category" role="alert"></small>
+          </div>
+
+          <!-- Rich-text editor -->
+          <div class="field">
+            <label id="content-label">Content <span style="color:var(--danger)">*</span></label>
+
+            <!-- Toolbar -->
+            <div class="toolbar" role="toolbar" aria-label="Formatting toolbar" aria-controls="editor">
+              <button class="tool btn btn-ghost" type="button" data-command="bold" title="Bold" aria-label="Bold">
+                <i class="fa-solid fa-bold" aria-hidden="true"></i>
+              </button>
+              <button class="tool btn btn-ghost" type="button" data-command="italic" title="Italic" aria-label="Italic">
+                <i class="fa-solid fa-italic" aria-hidden="true"></i>
+              </button>
+              <button class="tool btn btn-ghost" type="button" data-command="underline" title="Underline" aria-label="Underline">
+                <i class="fa-solid fa-underline" aria-hidden="true"></i>
+              </button>
+              <button class="tool btn btn-ghost" type="button" data-command="formatBlock" data-value="h2" title="Heading 2" aria-label="Heading 2">
+                H2
+              </button>
+              <button class="tool btn btn-ghost" type="button" data-command="formatBlock" data-value="h3" title="Heading 3" aria-label="Heading 3">
+                H3
+              </button>
+              <button class="tool btn btn-ghost" type="button" data-command="insertUnorderedList" title="Bullet list" aria-label="Bullet list">
+                <i class="fa-solid fa-list-ul" aria-hidden="true"></i>
+              </button>
+              <button class="tool btn btn-ghost" type="button" data-command="insertOrderedList" title="Numbered list" aria-label="Numbered list">
+                <i class="fa-solid fa-list-ol" aria-hidden="true"></i>
+              </button>
+              <button class="tool btn btn-ghost" type="button" data-command="formatBlock" data-value="blockquote" title="Blockquote" aria-label="Blockquote">
+                <i class="fa-solid fa-quote-left" aria-hidden="true"></i>
+              </button>
+              <button class="tool btn btn-ghost" type="button" id="editor-link" title="Insert link" aria-label="Insert link">
+                <i class="fa-solid fa-link" aria-hidden="true"></i>
+              </button>
+              <button class="tool btn btn-ghost" type="button" data-command="removeFormat" title="Clear formatting" aria-label="Clear formatting">
+                <i class="fa-solid fa-text-slash" aria-hidden="true"></i>
+              </button>
+            </div>
+
+            <!-- Editable content area -->
+            <div
+              id="editor"
+              class="editor field"
+              contenteditable="true"
+              role="textbox"
+              aria-multiline="true"
+              aria-labelledby="content-label"
+              aria-describedby="content-error word-count"
+              data-placeholder="Write your story here…"
+              style="border-radius:14px;"
+            ></div>
+
+            <small id="word-count" style="color:var(--muted);"></small>
+            <small class="field-error" id="content-error" data-error-for="content" role="alert"></small>
+          </div>
+
+          <!-- Action buttons -->
+          <div class="editor-actions">
+            <button class="btn btn-ghost" type="button" id="save-draft">
+              <i class="fa-regular fa-floppy-disk" aria-hidden="true"></i>
+              Save as draft
+            </button>
+            <button class="btn btn-primary" type="submit" id="publish-blog">
+              <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+              Publish
+            </button>
+            <a class="btn btn-ghost" id="discard-link" href="dashboard.html#posts" style="color:var(--danger);">
+              <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+              Discard
+            </a>
+          </div>
+        </form>
+
+        <!-- Right: settings panel -->
+        <aside aria-label="Story settings">
+          <!-- Cover image preview -->
+          <div class="panel preview-card">
+            <h3 style="font-weight:700;margin-bottom:0.7rem;">Cover image</h3>
+            <img id="image-preview" src="" alt="Cover image preview" aria-label="Cover image preview">
+
+            <!-- URL input -->
+            <div class="field" style="margin-top:0.7rem;">
+              <label for="image-url">Image URL</label>
+              <input
+                id="image-url"
+                name="imageUrl"
+                type="url"
+                placeholder="https://example.com/image.jpg"
+                aria-describedby="image-url-error"
+              >
+              <small class="field-error" id="image-url-error" data-error-for="imageUrl" role="alert"></small>
+            </div>
+
+            <!-- File upload -->
+            <div class="field">
+              <label>Upload image</label>
+              <div class="file-btn">
+                <label class="btn btn-ghost" style="cursor:pointer;width:100%;justify-content:center;">
+                  <i class="fa-solid fa-upload" aria-hidden="true"></i>
+                  Choose file
+                  <input name="imageFile" type="file" accept="image/*" aria-label="Choose image file" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">
+                </label>
+              </div>
+            </div>
+
+            <button class="btn btn-ghost" type="button" id="clear-image" style="width:100%;">
+              <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+              Use default cover
+            </button>
+          </div>
+
+          <!-- Options -->
+          <div class="panel" style="margin-top:1rem;">
+            <h3 style="font-weight:700;margin-bottom:0.9rem;">Options</h3>
+            <label class="checkbox">
+              <input name="featured" type="checkbox" id="blog-featured">
+              Mark as featured story
+            </label>
+            <small style="color:var(--muted);display:block;margin-top:0.35rem;">Featured stories appear at the top of the home page.</small>
+          </div>
+        </aside>
+
+      </div><!-- /editor-layout -->
+    </div><!-- /app-main -->
+  </div><!-- /app-shell -->
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/blogs.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
