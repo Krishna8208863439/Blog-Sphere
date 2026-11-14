@@ -1,0 +1,13 @@
+node_modules/
+.env
+uploads/*.jpg
+uploads/*.jpeg
+uploads/*.png
+uploads/*.gif
+uploads/*.webp
+uploads/*.svg
+!uploads/.gitkeep
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
