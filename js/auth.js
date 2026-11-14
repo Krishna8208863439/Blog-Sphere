@@ -42,12 +42,13 @@ function initLogin() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('email')) form.elements.email.value = params.get('email');
 
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
     BlogUI.clearFieldErrors(form);
     BlogUI.showAlert(alert, '');
     const email = form.elements.email.value.trim();
     const password = form.elements.password.value;
+    const remember = form.elements.remember.checked;
     let invalid = false;
     if (!EMAIL_PATTERN.test(email)) {
       BlogUI.setFieldError(form, 'email', 'Enter a valid email address.');
@@ -62,26 +63,39 @@ function initLogin() {
       return;
     }
 
-    const user = BlogStore.authenticate(email, password);
+    const button = form.querySelector('[type="submit"]');
+    BlogUI.setBusy(button, true, 'Signing in');
+
+    // authenticate() is now async (calls POST /api/auth/login)
+    const user = await BlogStore.authenticate(email, password, remember);
     if (!user) {
+      BlogUI.setBusy(button, false, 'Sign in');
       BlogUI.showAlert(alert, 'Email or password is incorrect.');
       BlogUI.setFieldError(form, 'password', 'Check your password and try again.');
       form.elements.password.focus();
       return;
     }
 
-    const button = form.querySelector('[type="submit"]');
-    BlogUI.setBusy(button, true, 'Signing in');
-    BlogStore.setSession(user.id, form.elements.remember.checked);
     BlogUI.flash(`Welcome back, ${BlogUI.firstName(user.fullName)}.`);
     window.location.href = BlogUI.safeNext(params.get('next'));
   });
 
-  document.getElementById('demo-login').addEventListener('click', () => {
+  document.getElementById('demo-login').addEventListener('click', async () => {
     form.elements.email.value = 'demo@blogsphere.com';
     form.elements.password.value = 'Demo1234!';
     form.elements.remember.checked = true;
-    form.requestSubmit();
+    // trigger async submit
+    form.elements.email.dispatchEvent(new Event('input'));
+    const button = form.querySelector('[type="submit"]');
+    BlogUI.setBusy(button, true, 'Signing in');
+    const user = await BlogStore.authenticate('demo@blogsphere.com', 'Demo1234!', true);
+    if (!user) {
+      BlogUI.setBusy(button, false, 'Sign in');
+      BlogUI.showAlert(alert, 'Demo account not found. Please register first.');
+      return;
+    }
+    BlogUI.flash(`Welcome back, ${BlogUI.firstName(user.fullName)}.`);
+    window.location.href = BlogUI.safeNext(params.get('next'));
   });
 
   document.getElementById('forgot-open').addEventListener('click', () => {
@@ -103,7 +117,7 @@ function initLogin() {
   const confirmForm = document.getElementById('reset-confirm');
   let resetEmail = '';
 
-  requestForm.addEventListener('submit', (event) => {
+  requestForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     BlogUI.clearFieldErrors(requestForm);
     const email = requestForm.elements.email.value.trim();
@@ -111,7 +125,9 @@ function initLogin() {
       BlogUI.setFieldError(requestForm, 'email', 'Enter the email on your account.');
       return;
     }
-    if (!accountExists(email)) {
+    // check-email is async now
+    const exists = await accountExists(email);
+    if (!exists) {
       BlogUI.setFieldError(requestForm, 'email', 'We could not find an account with that email.');
       return;
     }
@@ -121,7 +137,7 @@ function initLogin() {
     confirmForm.elements.password.focus();
   });
 
-  confirmForm.addEventListener('submit', (event) => {
+  confirmForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     BlogUI.clearFieldErrors(confirmForm);
     const password = confirmForm.elements.password.value;
@@ -135,7 +151,7 @@ function initLogin() {
       BlogUI.setFieldError(confirmForm, 'confirmPassword', 'Passwords do not match.');
       return;
     }
-    const saved = BlogStore.setPasswordByEmail(resetEmail, password);
+    const saved = await BlogStore.setPasswordByEmail(resetEmail, password);
     if (!saved) {
       BlogUI.setFieldError(confirmForm, 'password', 'That account is no longer available.');
       return;
@@ -154,16 +170,27 @@ function initLogin() {
 }
 
 function accountExists(email) {
+  // Now async — calls POST /api/auth/check-email
   return lookupStoredEmail(email.trim().toLowerCase());
 }
 
-function lookupStoredEmail(email) {
+async function lookupStoredEmail(email) {
   try {
-    const users = JSON.parse(localStorage.getItem('blogsphere_users') || '[]');
-    return users.some((user) => user.email === email);
+    const res = await fetch('http://localhost:5000/api/auth/check-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const json = await res.json();
+    return json.success && json.data && json.data.exists;
   } catch (error) {
-    console.error(error);
-    return false;
+    // Fall back to localStorage check if server is unreachable
+    try {
+      const users = JSON.parse(localStorage.getItem('blogsphere_users') || '[]');
+      return users.some((user) => user.email === email);
+    } catch (_) {
+      return false;
+    }
   }
 }
 
@@ -186,7 +213,7 @@ function initRegister() {
     strengthLabel.textContent = labels[strength] || 'Use 8 or more characters with a letter and a number.';
   });
 
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
     BlogUI.clearFieldErrors(form);
     BlogUI.showAlert(alert, '');
@@ -224,22 +251,25 @@ function initRegister() {
       return;
     }
 
+    const button = form.querySelector('[type="submit"]');
+    BlogUI.setBusy(button, true, 'Creating account');
+
     let result;
     try {
-      result = BlogStore.createUser({ fullName, email, username, password });
+      result = await BlogStore.createUser({ fullName, email, username, password });
     } catch (error) {
+      BlogUI.setBusy(button, false, 'Create account');
       BlogUI.showAlert(alert, error.message || 'The account could not be saved.');
       return;
     }
     if (!result.ok) {
+      BlogUI.setBusy(button, false, 'Create account');
       BlogUI.setFieldError(form, result.field || 'email', result.message);
       BlogUI.showAlert(alert, result.message);
       BlogUI.focusFirstInvalid(form);
       return;
     }
 
-    const button = form.querySelector('[type="submit"]');
-    BlogUI.setBusy(button, true, 'Creating account');
     BlogUI.flash('Account created. Sign in with your new email and password.');
     window.location.href = `login.html?email=${encodeURIComponent(result.user.email)}`;
   });

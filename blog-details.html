@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Dynamic title/description set by JS -->
   <meta name="description" content="Read a story on BlogSphere.">
   <title>Story — BlogSphere</title>
 
@@ -14,21 +15,287 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Outfit:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&display=swap" rel="stylesheet">
 
-  <!-- Font Awesome -->
+  <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
 
-  <!-- Styles -->
+  <!-- Base styles -->
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/responsive.css">
+
+  <!-- Blog-details-specific enhancements -->
+  <style>
+    /* ── Progress bar ───────────────────────────────────────────── */
+    .read-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 50;
+      height: 3px;
+      width: 0%;
+      background: var(--accent);
+      transition: width 0.1s linear;
+    }
+
+    /* ── Hero cover ─────────────────────────────────────────────── */
+    .article-hero {
+      width: 100%;
+      max-height: 540px;
+      overflow: hidden;
+      background: var(--accent-soft);
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+
+    .article-hero img {
+      width: 100%;
+      height: 540px;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ── Article layout ─────────────────────────────────────────── */
+    .article-container {
+      width: min(var(--max), calc(100% - 2.5rem));
+      margin: 0 auto;
+      padding: 2.5rem 0 4rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .article-main { min-width: 0; }
+
+    /* ── Meta header ────────────────────────────────────────────── */
+    .article-category-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.8rem);
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1.08;
+      color: var(--ink);
+      margin-bottom: 1.1rem;
+    }
+
+    .article-lede {
+      font-size: 1.22rem;
+      color: var(--ink-soft);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      max-width: 54ch;
+    }
+
+    .article-byline {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      flex-wrap: wrap;
+      padding: 1.1rem 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 2rem;
+    }
+
+    .byline-avatar {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .byline-info { flex: 1; min-width: 0; }
+    .byline-name  { font-weight: 700; color: var(--ink); display: block; }
+    .byline-meta  { color: var(--muted); font-size: 0.9rem; display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
+    .byline-dot   { opacity: 0.4; }
+
+    .byline-actions { display: flex; gap: 0.5rem; margin-left: auto; flex-wrap: wrap; }
+
+    /* ── Draft notice ───────────────────────────────────────────── */
+    .draft-notice {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--warning-soft);
+      color: var(--warning);
+      border-radius: 14px;
+      padding: 0.85rem 1rem;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+
+    /* ── Prose ──────────────────────────────────────────────────── */
+    .article-prose {
+      font-family: var(--font-serif);
+      font-size: 1.18rem;
+      line-height: 1.8;
+      color: var(--ink);
+    }
+
+    .article-prose p     { margin: 1.1rem 0; }
+    .article-prose h2    { font-family: var(--font-display); font-size: 1.9rem; letter-spacing: -0.03em; margin: 2.2rem 0 0.7rem; color: var(--ink); }
+    .article-prose h3    { font-family: var(--font-display); font-size: 1.5rem; letter-spacing: -0.02em; margin: 1.8rem 0 0.6rem; color: var(--ink); }
+    .article-prose ul,
+    .article-prose ol    { padding-left: 1.4rem; margin: 1rem 0; }
+    .article-prose ul    { list-style: disc; }
+    .article-prose ol    { list-style: decimal; }
+    .article-prose li    { margin: 0.4rem 0; }
+    .article-prose blockquote {
+      border-left: 4px solid var(--accent);
+      margin: 1.8rem 0;
+      padding: 0.8rem 1.2rem;
+      background: var(--accent-soft);
+      border-radius: 0 12px 12px 0;
+      font-style: italic;
+      color: var(--ink-soft);
+    }
+    .article-prose a     { color: var(--accent-strong); text-decoration: underline; }
+    .article-prose strong { font-weight: 700; }
+
+    /* ── Article footer ─────────────────────────────────────────── */
+    .article-footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .article-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-right: auto; }
+
+    /* ── Sidebar ────────────────────────────────────────────────── */
+    .article-sidebar {
+      position: sticky;
+      top: calc(var(--nav-h) + 1.5rem);
+    }
+
+    .sidebar-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .sidebar-card h3 {
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.9rem;
+    }
+
+    .author-block { text-align: center; }
+    .author-block .byline-avatar { width: 72px; height: 72px; font-size: 1.5rem; margin: 0 auto 0.7rem; }
+    .author-block strong { display: block; font-size: 1.1rem; margin-bottom: 0.2rem; }
+    .author-block .author-bio { color: var(--muted); font-size: 0.93rem; line-height: 1.5; margin-top: 0.4rem; }
+
+    .toc-list { list-style: none; padding: 0; }
+    .toc-list li + li { margin-top: 0.4rem; }
+    .toc-list a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.93rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.3rem 0;
+      transition: color 0.2s;
+    }
+    .toc-list a:hover { color: var(--ink); }
+    .toc-list a::before { content: "—"; flex: 0 0 auto; }
+
+    .share-row { display: flex; gap: 0.5rem; justify-content: center; }
+    .share-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--line-strong);
+      background: var(--surface);
+      display: grid;
+      place-items: center;
+      color: var(--ink-soft);
+      transition: background 0.2s, color 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+    .share-btn:hover { background: var(--accent); color: var(--on-accent); transform: translateY(-2px); }
+
+    /* ── Related section ────────────────────────────────────────── */
+    .related-wrap {
+      width: min(var(--max), calc(100% - 2.5rem));
+      margin: 0 auto;
+      padding-bottom: 4rem;
+    }
+
+    /* ── Skeleton loader ─────────────────────────────────────────  */
+    @keyframes shimmer {
+      0%   { background-position: -600px 0; }
+      100% { background-position: 600px 0; }
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, var(--line) 25%, var(--line-strong) 50%, var(--line) 75%);
+      background-size: 1200px 100%;
+      animation: shimmer 1.4s infinite linear;
+      border-radius: 8px;
+    }
+
+    .skeleton-hero  { height: 440px; border-radius: 0 0 var(--radius) var(--radius); margin-bottom: 2rem; }
+    .skeleton-title { height: 56px; width: 80%; margin-bottom: 1rem; }
+    .skeleton-line  { height: 20px; margin-bottom: 0.6rem; }
+    .skeleton-line.short { width: 60%; }
+    .skeleton-line.shorter { width: 40%; }
+
+    /* ── Error state ─────────────────────────────────────────────── */
+    .error-state {
+      text-align: center;
+      padding: 5rem 1rem;
+    }
+    .error-state .error-icon { font-size: 4rem; color: var(--muted); margin-bottom: 1rem; }
+    .error-state h1 { font-family: var(--font-display); font-size: 2.4rem; margin-bottom: 0.6rem; }
+    .error-state p  { color: var(--muted); max-width: 36ch; margin: 0 auto 1.5rem; }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .article-container { grid-template-columns: 1fr; }
+      .article-sidebar { position: static; }
+    }
+
+    @media (max-width: 720px) {
+      .article-title { font-size: 2rem; }
+      .article-lede  { font-size: 1.08rem; }
+      .article-prose { font-size: 1.08rem; }
+      .article-hero img { height: 280px; }
+      .byline-actions { width: 100%; margin-left: 0; }
+      .byline-actions .btn { flex: 1; justify-content: center; }
+    }
+  </style>
 </head>
 <body data-page="details">
 
+  <!-- Reading progress bar -->
+  <div class="read-progress" id="read-progress" role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+
   <!-- Skip link -->
-  <a class="skip-link" href="#article-root">Skip to article</a>
+  <a class="skip-link" href="#article-main">Skip to article</a>
 
   <!-- Page loader -->
   <div id="page-loader" class="page-loader" aria-hidden="true">
-    <div class="loader-mark"><span></span><p>Loading…</p></div>
+    <div class="loader-mark"><span></span><p>Loading story…</p></div>
   </div>
 
   <!-- No-JS warning -->
@@ -36,32 +303,56 @@
     <p class="noscript">BlogSphere requires JavaScript. Please enable it in your browser settings.</p>
   </noscript>
 
-  <!-- Header -->
+  <!-- Header (injected by main.js) -->
   <header id="site-header" class="site-header" role="banner"></header>
 
-  <!-- Main -->
+  <!-- Main content (all injected by initDetails in blogs.js) -->
   <main id="main-content">
-    <div class="article-wrap">
 
-      <!-- Article content (injected by blogs.js) -->
-      <article id="article-root" role="article" aria-label="Story content"></article>
+    <!-- Hero image slot -->
+    <div id="article-hero-slot"></div>
 
-      <!-- Related stories -->
-      <section id="related-section" aria-labelledby="related-title" hidden>
-        <div class="section-head" style="margin-top:2.5rem;">
-          <h2 id="related-title">More in this category</h2>
+    <!-- Article body -->
+    <div class="article-container">
+      <article class="article-main" id="article-main" role="article">
+        <!-- Skeleton shown while loading -->
+        <div id="article-skeleton" aria-hidden="true">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-line"></div>
+          <div class="skeleton skeleton-line short"></div>
+          <div class="skeleton skeleton-line"></div>
+          <div class="skeleton skeleton-line shorter" style="margin-bottom:2rem;"></div>
+          <div class="skeleton skeleton-line"></div>
+          <div class="skeleton skeleton-line"></div>
+          <div class="skeleton skeleton-line short"></div>
         </div>
-        <div class="card-grid" id="related-grid"></div>
-      </section>
 
+        <!-- Real content injected here -->
+        <div id="article-content" hidden></div>
+      </article>
+
+      <!-- Sidebar injected here -->
+      <aside class="article-sidebar" id="article-sidebar" hidden></aside>
     </div>
+
+    <!-- Related stories -->
+    <section id="related-section" class="related-wrap" aria-labelledby="related-title" hidden>
+      <div class="section-head">
+        <h2 id="related-title" style="font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.2rem);letter-spacing:-0.03em;">
+          More in this category
+        </h2>
+      </div>
+      <div class="card-grid" id="related-grid"></div>
+    </section>
+
   </main>
 
-  <!-- Footer -->
+  <!-- Footer (injected by main.js) -->
   <footer id="site-footer" class="site-footer" role="contentinfo"></footer>
 
-  <!-- Scripts -->
+  <!-- Scripts — storage.js first (fallback), api.js overrides BlogStore -->
   <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
   <script src="js/main.js"></script>
   <script src="js/blogs.js"></script>
 </body>
