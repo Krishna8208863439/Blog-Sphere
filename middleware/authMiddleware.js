@@ -6,8 +6,23 @@
  */
 'use strict';
 
+const mongoose = require('mongoose');
 const { verifyToken } = require('../utils/generateToken');
 const User = require('../models/User');
+
+/**
+ * Validate MongoDB ObjectId in request parameters.
+ */
+const validateObjectId = (paramName = 'id') => (req, res, next) => {
+  const id = req.params[paramName];
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid blog ID format.',
+    });
+  }
+  next();
+};
 
 /**
  * Require a valid JWT.
@@ -90,4 +105,4 @@ const optionalAuth = async (req, res, next) => {
   }
 };
 
-module.exports = { protect, optionalAuth };
+module.exports = { protect, optionalAuth, validateObjectId };

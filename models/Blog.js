@@ -5,7 +5,17 @@
 
 const mongoose = require('mongoose');
 
-const CATEGORIES = ['Technology', 'AI', 'Programming', 'Lifestyle', 'Education'];
+const CATEGORIES = [
+  'Technology',
+  'Artificial Intelligence',
+  'Programming',
+  'Web Development',
+  'Data Science',
+  'Education',
+  'Lifestyle',
+  'Business',
+  'AI', // alias for backwards compatibility
+];
 
 const blogSchema = new mongoose.Schema(
   {

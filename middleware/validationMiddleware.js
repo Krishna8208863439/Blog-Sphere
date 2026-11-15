@@ -73,7 +73,17 @@ const loginRules = [
 ];
 
 // ── Blog create / update rules ─────────────────────────────────────────────
-const CATEGORIES = ['Technology', 'AI', 'Programming', 'Lifestyle', 'Education'];
+const CATEGORIES = [
+  'Technology',
+  'Artificial Intelligence',
+  'Programming',
+  'Web Development',
+  'Data Science',
+  'Education',
+  'Lifestyle',
+  'Business',
+  'AI',
+];
 
 const blogRules = [
   body('title')

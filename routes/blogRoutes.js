@@ -23,7 +23,7 @@ const {
   getStats,
 } = require('../controllers/blogController');
 
-const { protect, optionalAuth } = require('../middleware/authMiddleware');
+const { protect, optionalAuth, validateObjectId } = require('../middleware/authMiddleware');
 const {
   validate,
   blogRules,
@@ -65,21 +65,21 @@ router.use((req, res, next) => {
 router.get('/',          optionalAuth, getPublishedBlogs);
 router.get('/my-blogs',  protect,      getMyBlogs);       // must come BEFORE /:id
 router.get('/stats',     protect,      getStats);         // must come BEFORE /:id
-router.get('/:id',       optionalAuth, getBlog);
+router.get('/:id',       validateObjectId('id'), optionalAuth, getBlog);
 
 // Protected — create
 router.post('/',       protect, blogRules, validate, createBlog);
 
 // Protected — update / delete
-router.put('/:id',     protect, blogRules, validate, updateBlog);
-router.delete('/:id',  protect, deleteBlog);
+router.put('/:id',     protect, validateObjectId('id'), blogRules, validate, updateBlog);
+router.delete('/:id',  protect, validateObjectId('id'), deleteBlog);
 
 // Protected — status transitions
-router.patch('/:id/publish', protect, publishBlog);
-router.patch('/:id/draft',   protect, moveToDraft);
+router.patch('/:id/publish', protect, validateObjectId('id'), publishBlog);
+router.patch('/:id/draft',   protect, validateObjectId('id'), moveToDraft);
 
 // Public — likes (actor ID passed in body)
-router.post('/:id/like', optionalAuth, toggleLike);
+router.post('/:id/like', validateObjectId('id'), optionalAuth, toggleLike);
 
 // Protected — image upload
 router.post('/upload-image', protect, upload.single('image'), uploadImage);

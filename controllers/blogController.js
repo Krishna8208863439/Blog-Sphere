@@ -5,14 +5,19 @@
  */
 'use strict';
 
+const mongoose = require('mongoose');
 const Blog = require('../models/Blog');
 
 const COVER_MAP = {
   Technology: 'assets/images/cover-technology.svg',
   AI: 'assets/images/cover-ai.svg',
+  'Artificial Intelligence': 'assets/images/cover-ai.svg',
   Programming: 'assets/images/cover-programming.svg',
+  'Web Development': 'assets/images/cover-programming.svg',
+  'Data Science': 'assets/images/cover-technology.svg',
   Lifestyle: 'assets/images/cover-lifestyle.svg',
   Education: 'assets/images/cover-education.svg',
+  Business: 'assets/images/cover-technology.svg',
 };
 
 /** Convert a Mongoose Blog document to the shape the frontend expects. */
@@ -86,29 +91,48 @@ const createBlog = async (req, res, next) => {
 
 // ═════════════════════════════════════════════════════════════════════════════
 // GET /api/blogs           — All published blogs (public, with filters)
-// Query params: q, category, page, limit
+// Query params: q / search, category, page, limit
 // ═════════════════════════════════════════════════════════════════════════════
 const getPublishedBlogs = async (req, res, next) => {
   try {
-    const { q, category, page = 1, limit = 20 } = req.query;
+    const { q, search, category, page = 1, limit = 9 } = req.query;
     const actorId = req.user ? req.user._id.toString() : (req.guestId || '');
 
     const filter = { status: 'published' };
-    if (category && category !== 'All') filter.category = category;
-
-    // Full-text search on the text index
-    if (q && q.trim()) {
-      filter.$text = { $search: q.trim() };
+    
+    // Category filter: support category, handle 'All' or 'all'
+    if (category && category !== 'All' && category !== 'all') {
+      if (category === 'Artificial Intelligence') {
+        filter.category = { $in: ['Artificial Intelligence', 'AI'] };
+      } else if (category === 'AI') {
+        filter.category = { $in: ['Artificial Intelligence', 'AI'] };
+      } else {
+        filter.category = category;
+      }
     }
 
-    const skip = (Number(page) - 1) * Number(limit);
+    // Search query: support both `search` and `q` parameters
+    const searchTerm = (search || q || '').trim();
+    if (searchTerm) {
+      // Regex case-insensitive search across title, description, content
+      const searchRegex = new RegExp(searchTerm.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'), 'i');
+      filter.$or = [
+        { title: { $regex: searchRegex } },
+        { description: { $regex: searchRegex } },
+        { content: { $regex: searchRegex } },
+      ];
+    }
+
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.max(1, parseInt(limit, 10) || 9);
+    const skip = (pageNum - 1) * limitNum;
 
     const [blogs, total] = await Promise.all([
       Blog.find(filter)
         .populate('author', 'fullName username bio')
-        .sort(q ? { score: { $meta: 'textScore' } } : { publishedAt: -1 })
+        .sort({ publishedAt: -1, createdAt: -1 })
         .skip(skip)
-        .limit(Number(limit))
+        .limit(limitNum)
         .lean({ virtuals: true }),
       Blog.countDocuments(filter),
     ]);
@@ -118,8 +142,9 @@ const getPublishedBlogs = async (req, res, next) => {
       data: {
         blogs: blogs.map((b) => formatBlog(b, actorId)),
         total,
-        page: Number(page),
-        pages: Math.ceil(total / Number(limit)),
+        page: pageNum,
+        pages: Math.ceil(total / limitNum) || 1,
+        limit: limitNum,
       },
     });
   } catch (error) {
@@ -129,28 +154,43 @@ const getPublishedBlogs = async (req, res, next) => {
 
 // ═════════════════════════════════════════════════════════════════════════════
 // GET /api/blogs/my-blogs  — Logged-in user's blogs (all statuses)
-// Query params: status, category, q, page, limit
+// Query params: status, category, q, search, page, limit
 // ═════════════════════════════════════════════════════════════════════════════
 const getMyBlogs = async (req, res, next) => {
   try {
-    const { status, category, q, page = 1, limit = 50 } = req.query;
+    const { status, category, q, search, page = 1, limit = 50 } = req.query;
     const actorId = req.user._id.toString();
 
     const filter = { author: req.user._id };
-    if (status && status !== 'all') filter.status = status;
-    if (category && category !== 'all') filter.category = category;
-    if (q && q.trim()) {
-      filter.$text = { $search: q.trim() };
+    if (status && status !== 'all' && status !== 'All') filter.status = status;
+    if (category && category !== 'all' && category !== 'All') {
+      if (category === 'Artificial Intelligence' || category === 'AI') {
+        filter.category = { $in: ['Artificial Intelligence', 'AI'] };
+      } else {
+        filter.category = category;
+      }
     }
 
-    const skip = (Number(page) - 1) * Number(limit);
+    const searchTerm = (search || q || '').trim();
+    if (searchTerm) {
+      const searchRegex = new RegExp(searchTerm.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'), 'i');
+      filter.$or = [
+        { title: { $regex: searchRegex } },
+        { description: { $regex: searchRegex } },
+        { content: { $regex: searchRegex } },
+      ];
+    }
+
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.max(1, parseInt(limit, 10) || 50);
+    const skip = (pageNum - 1) * limitNum;
 
     const [blogs, total] = await Promise.all([
       Blog.find(filter)
         .populate('author', 'fullName username bio')
-        .sort({ updatedAt: -1 })
+        .sort({ updatedAt: -1, createdAt: -1 })
         .skip(skip)
-        .limit(Number(limit))
+        .limit(limitNum)
         .lean({ virtuals: true }),
       Blog.countDocuments(filter),
     ]);
@@ -160,8 +200,9 @@ const getMyBlogs = async (req, res, next) => {
       data: {
         blogs: blogs.map((b) => formatBlog(b, actorId)),
         total,
-        page: Number(page),
-        pages: Math.ceil(total / Number(limit)),
+        page: pageNum,
+        pages: Math.ceil(total / limitNum) || 1,
+        limit: limitNum,
       },
     });
   } catch (error) {
@@ -174,6 +215,10 @@ const getMyBlogs = async (req, res, next) => {
 // ═════════════════════════════════════════════════════════════════════════════
 const getBlog = async (req, res, next) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: 'Invalid blog ID format.' });
+    }
+
     const blog = await Blog.findById(req.params.id)
       .populate('author', 'fullName username bio')
       .lean({ virtuals: true });
@@ -211,6 +256,10 @@ const getBlog = async (req, res, next) => {
 // ═════════════════════════════════════════════════════════════════════════════
 const updateBlog = async (req, res, next) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: 'Invalid blog ID format.' });
+    }
+
     const blog = await Blog.findById(req.params.id);
     if (!blog) {
       return res.status(404).json({ success: false, message: 'Blog not found.' });
@@ -219,7 +268,7 @@ const updateBlog = async (req, res, next) => {
     if (blog.author.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
-        message: 'You can only edit your own stories.',
+        message: 'Unauthorized: You can only edit your own stories.',
       });
     }
 
@@ -249,8 +298,8 @@ const updateBlog = async (req, res, next) => {
       success: true,
       message:
         resolvedStatus === 'published'
-          ? 'Story updated.'
-          : 'Draft saved.',
+          ? 'Blog updated successfully.'
+          : 'Draft saved successfully.',
       data: { blog: formatBlog(blog.toObject({ virtuals: true }), actorId) },
     });
   } catch (error) {
@@ -263,6 +312,10 @@ const updateBlog = async (req, res, next) => {
 // ═════════════════════════════════════════════════════════════════════════════
 const deleteBlog = async (req, res, next) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: 'Invalid blog ID format.' });
+    }
+
     const blog = await Blog.findById(req.params.id);
     if (!blog) {
       return res.status(404).json({ success: false, message: 'Blog not found.' });
@@ -271,7 +324,7 @@ const deleteBlog = async (req, res, next) => {
     if (blog.author.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
-        message: 'You can only delete your own stories.',
+        message: 'Unauthorized: You can only delete your own stories.',
       });
     }
 
@@ -279,7 +332,7 @@ const deleteBlog = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Story deleted.',
+      message: 'Blog deleted successfully.',
     });
   } catch (error) {
     next(error);
