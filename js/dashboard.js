@@ -114,20 +114,18 @@ function postRow(blog) {
           <a href="${editUrl}">${BlogUI.escapeHtml(blog.title)}</a>
         </h3>
         <p>${BlogUI.escapeHtml(blog.description || 'No description yet.')}</p>
-        <small>Updated ${BlogUI.escapeHtml(BlogUI.formatDate(blog.updatedAt))}</small>
+        <small>Created ${BlogUI.escapeHtml(BlogUI.formatDate(blog.createdAt))} · Updated ${BlogUI.escapeHtml(BlogUI.formatDate(blog.updatedAt))}</small>
       </div>
       <div class="post-actions">
-        ${blog.status === 'published'
-          ? `<a class="icon-btn" href="${detailUrl}" aria-label="View ${BlogUI.escapeHtml(blog.title)}">
-               <i class="fa-solid fa-arrow-up-right-from-square"></i>
-             </a>`
-          : ''}
-        <a class="icon-btn" href="${editUrl}" aria-label="Edit ${BlogUI.escapeHtml(blog.title)}">
+        <a class="icon-btn" href="${detailUrl}" aria-label="View ${BlogUI.escapeHtml(blog.title)}" title="View Blog">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        </a>
+        <a class="icon-btn" href="${editUrl}" aria-label="Edit ${BlogUI.escapeHtml(blog.title)}" title="Edit Blog">
           <i class="fa-solid fa-pen"></i>
         </a>
         <button class="icon-btn danger" type="button"
                 data-delete-blog="${BlogUI.escapeHtml(blog.id)}"
-                aria-label="Delete ${BlogUI.escapeHtml(blog.title)}">
+                aria-label="Delete ${BlogUI.escapeHtml(blog.title)}" title="Delete Blog">
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>

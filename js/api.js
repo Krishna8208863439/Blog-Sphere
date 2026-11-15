@@ -111,9 +111,13 @@ function setTheme(theme) {
 const COVER_MAP = {
   Technology: 'assets/images/cover-technology.svg',
   AI:         'assets/images/cover-ai.svg',
+  'Artificial Intelligence': 'assets/images/cover-ai.svg',
   Programming:'assets/images/cover-programming.svg',
+  'Web Development':'assets/images/cover-programming.svg',
+  'Data Science':'assets/images/cover-technology.svg',
   Lifestyle:  'assets/images/cover-lifestyle.svg',
   Education:  'assets/images/cover-education.svg',
+  Business:   'assets/images/cover-technology.svg',
 };
 
 function coverFor(category) {
@@ -126,7 +130,16 @@ function coverFor(category) {
 // ═════════════════════════════════════════════════════════════════════════════
 
 const BlogStore = {
-  CATEGORIES: ['Technology', 'AI', 'Programming', 'Lifestyle', 'Education'],
+  CATEGORIES: [
+    'Technology',
+    'Artificial Intelligence',
+    'Programming',
+    'Web Development',
+    'Data Science',
+    'Education',
+    'Lifestyle',
+    'Business',
+  ],
 
   coverFor,
   getTheme,
@@ -268,13 +281,44 @@ const BlogStore = {
 
   async getPublishedBlogs(params = {}) {
     const qs = new URLSearchParams();
-    if (params.q) qs.set('q', params.q);
-    if (params.category && params.category !== 'All') qs.set('category', params.category);
+    const searchTerm = params.search || params.q;
+    if (searchTerm) {
+      qs.set('search', searchTerm);
+      qs.set('q', searchTerm);
+    }
+    if (params.category && params.category !== 'All' && params.category !== 'all') {
+      qs.set('category', params.category);
+    }
     if (params.page) qs.set('page', params.page);
     if (params.limit) qs.set('limit', params.limit);
     const query = qs.toString() ? `?${qs}` : '';
     const res = await apiFetch(`/blogs${query}`);
-    return res.success ? res.data.blogs : [];
+    return res.success ? (res.data.blogs || []) : [];
+  },
+
+  async getPublishedBlogsWithMeta(params = {}) {
+    const qs = new URLSearchParams();
+    const searchTerm = params.search || params.q;
+    if (searchTerm) {
+      qs.set('search', searchTerm);
+      qs.set('q', searchTerm);
+    }
+    if (params.category && params.category !== 'All' && params.category !== 'all') {
+      qs.set('category', params.category);
+    }
+    if (params.page) qs.set('page', params.page);
+    if (params.limit) qs.set('limit', params.limit);
+    const query = qs.toString() ? `?${qs}` : '';
+    const res = await apiFetch(`/blogs${query}`);
+    if (res.success) {
+      return {
+        blogs: res.data.blogs || [],
+        total: res.data.total || 0,
+        page: res.data.page || 1,
+        pages: res.data.pages || 1,
+      };
+    }
+    return { blogs: [], total: 0, page: 1, pages: 1 };
   },
 
   async getBlogs() {
@@ -287,9 +331,22 @@ const BlogStore = {
     return res.success ? res.data.blog : null;
   },
 
-  async getBlogsByAuthor(authorId) {
-    const res = await apiFetch('/blogs/my-blogs');
-    return res.success ? res.data.blogs : [];
+  async getBlogsByAuthor(authorId, params = {}) {
+    const qs = new URLSearchParams();
+    const searchTerm = params.search || params.q;
+    if (searchTerm) {
+      qs.set('search', searchTerm);
+      qs.set('q', searchTerm);
+    }
+    if (params.status && params.status !== 'all') qs.set('status', params.status);
+    if (params.category && params.category !== 'all' && params.category !== 'All') {
+      qs.set('category', params.category);
+    }
+    if (params.page) qs.set('page', params.page);
+    if (params.limit) qs.set('limit', params.limit);
+    const query = qs.toString() ? `?${qs}` : '';
+    const res = await apiFetch(`/blogs/my-blogs${query}`);
+    return res.success ? (res.data.blogs || []) : [];
   },
 
   async getStats() {

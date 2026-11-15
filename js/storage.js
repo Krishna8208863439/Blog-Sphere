@@ -16,7 +16,16 @@ const BlogStore = (() => {
     guest: 'blogsphere_guest'
   };
 
-  const CATEGORIES = ['Technology', 'AI', 'Programming', 'Lifestyle', 'Education'];
+  const CATEGORIES = [
+    'Technology',
+    'Artificial Intelligence',
+    'Programming',
+    'Web Development',
+    'Data Science',
+    'Education',
+    'Lifestyle',
+    'Business',
+  ];
   const DEMO_ID = 'user-demo-ava';
 
   function uid() {

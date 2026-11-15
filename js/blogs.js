@@ -140,10 +140,14 @@ async function initHome() {
   const categoryBar     = document.getElementById('category-bar');
   const heroSearch      = document.getElementById('hero-search');
   const storyCount      = document.getElementById('story-count');
+  const homePagination  = document.getElementById('home-pagination');
   const params          = new URLSearchParams(window.location.search);
 
-  let query    = (params.get('q') || '').trim();
-  let category = params.get('category') || 'All';
+  let query       = (params.get('search') || params.get('q') || '').trim();
+  let category    = params.get('category') || 'All';
+  let currentPage = Math.max(1, parseInt(params.get('page') || '1', 10));
+  const PAGE_LIMIT = 6;
+
   if (category !== 'All' && !BlogStore.CATEGORIES.includes(category)) category = 'All';
 
   // Category chips
@@ -164,6 +168,43 @@ async function initHome() {
     heroInput.value = value;
   }
 
+  function renderPagination(total, page, pages) {
+    if (!homePagination) return;
+    if (pages <= 1) {
+      homePagination.hidden = true;
+      homePagination.innerHTML = '';
+      return;
+    }
+    homePagination.hidden = false;
+    homePagination.innerHTML = `
+      <button class="btn btn-ghost" type="button" id="prev-page-btn" ${page <= 1 ? 'disabled' : ''} style="gap:0.4rem;">
+        <i class="fa-solid fa-chevron-left" aria-hidden="true"></i> Previous
+      </button>
+      <span style="font-size:0.95rem;font-weight:600;padding:0 0.5rem;color:var(--muted);">
+        Page ${page} of ${pages}
+      </span>
+      <button class="btn btn-ghost" type="button" id="next-page-btn" ${page >= pages ? 'disabled' : ''} style="gap:0.4rem;">
+        Next <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+      </button>
+    `;
+
+    document.getElementById('prev-page-btn')?.addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        render();
+        document.getElementById('stories')?.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+
+    document.getElementById('next-page-btn')?.addEventListener('click', () => {
+      if (currentPage < pages) {
+        currentPage++;
+        render();
+        document.getElementById('stories')?.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+
   async function render() {
     // Loading state
     latestGrid.innerHTML = `
@@ -175,23 +216,43 @@ async function initHome() {
       </div>`;
     featuredSection.hidden = true;
     empty.innerHTML = '';
+    if (homePagination) homePagination.hidden = true;
 
-    const published = await BlogStore.getPublishedBlogs({ q: query, category });
+    const data = await BlogStore.getPublishedBlogsWithMeta({
+      search: query,
+      category,
+      page: currentPage,
+      limit: PAGE_LIMIT,
+    });
 
-    storyCount.textContent = String(published.length);
+    const published = data.blogs || [];
+    const totalCount = data.total || 0;
+    const totalPages = data.pages || 1;
+
+    storyCount.textContent = String(totalCount);
     categoryBar.querySelectorAll('.chip').forEach((chip) => {
       chip.classList.toggle('is-active', chip.dataset.category === category);
     });
 
     // Sync URL
     const url = new URL(window.location.href);
-    if (query) url.searchParams.set('q', query); else url.searchParams.delete('q');
+    if (query) {
+      url.searchParams.set('search', query);
+      url.searchParams.delete('q');
+    } else {
+      url.searchParams.delete('search');
+      url.searchParams.delete('q');
+    }
     if (category !== 'All') url.searchParams.set('category', category);
     else url.searchParams.delete('category');
+
+    if (currentPage > 1) url.searchParams.set('page', String(currentPage));
+    else url.searchParams.delete('page');
+
     window.history.replaceState({}, '', url);
 
     // Summary
-    const bits = [`${published.length} ${published.length === 1 ? 'story' : 'stories'}`];
+    const bits = [`${totalCount} ${totalCount === 1 ? 'story' : 'stories'}`];
     if (category !== 'All') bits.push(`in ${category}`);
     if (query) bits.push(`for "${query}"`);
     summary.textContent = `Showing ${bits.join(' ')}.`;
@@ -208,14 +269,14 @@ async function initHome() {
         text: query || category !== 'All'
           ? 'Try another word, or clear the filters to see the full journal.'
           : 'Published stories will appear here. Drafts stay on the author\'s dashboard.',
-        actionHref:  query || category !== 'All' ? 'index.html' : 'register.html',
+        actionHref:  query || category !== 'All' ? 'index.html' : 'create-blog.html',
         actionLabel: query || category !== 'All' ? 'Clear filters' : 'Start writing',
       });
       const clear = empty.querySelector('a');
       if (clear && (query || category !== 'All')) {
         clear.addEventListener('click', (e) => {
           e.preventDefault();
-          query = ''; category = 'All';
+          query = ''; category = 'All'; currentPage = 1;
           syncSearch('');
           render();
         });
@@ -224,7 +285,7 @@ async function initHome() {
     }
 
     const ranked      = rankStories(published);
-    const useFeatured = ranked.length >= 3 && !query && category === 'All';
+    const useFeatured = ranked.length >= 3 && !query && category === 'All' && currentPage === 1;
 
     if (useFeatured) {
       featuredSection.hidden = false;
@@ -237,24 +298,27 @@ async function initHome() {
       latestTitle.textContent = 'Latest articles';
       latestSection.hidden    = rest.length === 0;
       latestGrid.innerHTML    = rest.map((b) => cardMarkup(b)).join('');
-      if (!rest.length) empty.innerHTML = '<p class="caught-up">You are up to date.</p>';
     } else {
       featuredSection.hidden  = true;
       latestSection.hidden    = false;
       latestTitle.textContent = query || category !== 'All' ? 'Matching stories' : 'Latest articles';
-      latestGrid.innerHTML    = ranked.map((b) => cardMarkup(b)).join('');
+      latestGrid.innerHTML    = published.map((b) => cardMarkup(b)).join('');
     }
+
+    renderPagination(totalCount, currentPage, totalPages);
   }
 
   // Events
   heroSearch.addEventListener('submit', (e) => {
     e.preventDefault();
     query = heroInput.value.trim();
+    currentPage = 1;
     syncSearch(query);
     render();
   });
   heroInput.addEventListener('input', () => {
     query = heroInput.value.trim();
+    currentPage = 1;
     const nav = document.getElementById('nav-q');
     if (nav) nav.value = heroInput.value;
     render();
@@ -266,11 +330,13 @@ async function initHome() {
     navForm.addEventListener('submit', (e) => {
       e.preventDefault();
       query = navInput.value.trim();
+      currentPage = 1;
       syncSearch(query);
       render();
     });
     navInput.addEventListener('input', () => {
       query = navInput.value.trim();
+      currentPage = 1;
       heroInput.value = navInput.value;
       render();
     });
@@ -280,6 +346,7 @@ async function initHome() {
     const chip = e.target.closest('[data-category]');
     if (!chip) return;
     category = chip.dataset.category;
+    currentPage = 1;
     render();
     document.getElementById('stories')?.scrollIntoView({
       behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
