@@ -15,7 +15,17 @@ const formatUser = (user) => ({
   email: user.email,
   username: user.username,
   bio: user.bio || '',
+  profileImage: user.profileImage || '',
   createdAt: user.createdAt,
+  updatedAt: user.updatedAt,
+});
+
+// Cookie options
+const getCookieOptions = () => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
 });
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -86,6 +96,9 @@ const login = async (req, res, next) => {
 
     const token = generateToken(user._id.toString());
 
+    // Set secure HttpOnly cookie
+    res.cookie('token', token, getCookieOptions());
+
     return res.status(200).json({
       success: true,
       message: `Welcome back, ${user.fullName.split(' ')[0]}.`,
@@ -116,11 +129,11 @@ const getMe = async (req, res, next) => {
 
 // ═════════════════════════════════════════════════════════════════════════════
 // PATCH /api/auth/profile  (protected)
-// Update fullName, username, bio
+// Update fullName, username, email, bio, profileImage
 // ═════════════════════════════════════════════════════════════════════════════
 const updateProfile = async (req, res, next) => {
   try {
-    const { fullName, username, bio } = req.body;
+    const { fullName, username, email, bio, profileImage } = req.body;
     const userId = req.user._id;
 
     // Check username uniqueness if changed
@@ -138,10 +151,27 @@ const updateProfile = async (req, res, next) => {
       }
     }
 
+    // Check email uniqueness if changed
+    if (email && email.toLowerCase() !== req.user.email) {
+      const emailTaken = await User.findOne({
+        _id: { $ne: userId },
+        email: email.toLowerCase(),
+      });
+      if (emailTaken) {
+        return res.status(400).json({
+          success: false,
+          message: 'This email is already registered to another account.',
+          errors: { email: 'This email is already registered to another account.' },
+        });
+      }
+    }
+
     const updates = {};
     if (fullName !== undefined) updates.fullName = fullName;
     if (username !== undefined) updates.username = username;
+    if (email !== undefined) updates.email = email.toLowerCase();
     if (bio !== undefined) updates.bio = bio;
+    if (profileImage !== undefined) updates.profileImage = profileImage;
 
     const user = await User.findByIdAndUpdate(
       userId,
@@ -151,7 +181,7 @@ const updateProfile = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Profile updated.',
+      message: 'Profile updated successfully.',
       data: { user: formatUser(user) },
     });
   } catch (error) {
@@ -237,9 +267,26 @@ const checkEmail = async (req, res, next) => {
   }
 };
 
+// ═════════════════════════════════════════════════════════════════════════════
+// POST /api/auth/logout
+// ═════════════════════════════════════════════════════════════════════════════
+const logout = async (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: 'Logged out successfully.',
+  });
+};
+
 module.exports = {
   register,
   login,
+  logout,
   getMe,
   updateProfile,
   changePassword,

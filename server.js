@@ -10,15 +10,45 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
+const rateLimit = require('express-rate-limit');
 
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// ── Security Headers with Helmet ───────────────────────────────────────────
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // Let frontend fetch CDN assets and run smoothly
+    crossOriginEmbedderPolicy: false,
+  })
+);
+
+// ── Cookie Parser ─────────────────────────────────────────────────────────
+app.use(cookieParser());
+
+// ── Rate Limiting for Auth Endpoints ───────────────────────────────────────
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many requests from this IP. Please try again after 15 minutes.',
+  },
+});
+
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
 
 // ── CORS ─────────────────────────────────────────────────────────────────
 const allowedOrigins = [
@@ -62,6 +92,7 @@ app.get('/api/health', (req, res) => {
 
 // ── API routes ────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/blogs', blogRoutes);
 
 // ── Error handling ────────────────────────────────────────────────────────

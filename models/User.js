@@ -46,6 +46,11 @@ const userSchema = new mongoose.Schema(
       trim: true,
       maxlength: [280, 'Bio cannot exceed 280 characters.'],
     },
+    profileImage: {
+      type: String,
+      default: '',
+      trim: true,
+    },
   },
   {
     timestamps: true, // adds createdAt and updatedAt automatically

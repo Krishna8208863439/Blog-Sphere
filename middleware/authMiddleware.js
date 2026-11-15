@@ -26,6 +26,9 @@ const validateObjectId = (paramName = 'id') => (req, res, next) => {
 
 /**
  * Require a valid JWT.
+ * Looks for token in:
+ * 1. Authorization: Bearer <token>
+ * 2. HttpOnly Cookie: token
  * Sends 401 if the token is missing, expired, or invalid.
  */
 const protect = async (req, res, next) => {
@@ -37,6 +40,8 @@ const protect = async (req, res, next) => {
       req.headers.authorization.startsWith('Bearer ')
     ) {
       token = req.headers.authorization.split(' ')[1];
+    } else if (req.cookies && req.cookies.token) {
+      token = req.cookies.token;
     }
 
     if (!token) {
@@ -75,7 +80,7 @@ const protect = async (req, res, next) => {
 };
 
 /**
- * Attach req.user if a valid token is present, but never block the request.
+ * Attach req.user if a valid token is present (Header or Cookie), but never block the request.
  * Used for public routes that have optional owner-specific behavior (e.g. like state).
  */
 const optionalAuth = async (req, res, next) => {
@@ -87,6 +92,8 @@ const optionalAuth = async (req, res, next) => {
       req.headers.authorization.startsWith('Bearer ')
     ) {
       token = req.headers.authorization.split(' ')[1];
+    } else if (req.cookies && req.cookies.token) {
+      token = req.cookies.token;
     }
 
     if (!token) return next();

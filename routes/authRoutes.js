@@ -9,6 +9,7 @@ const router = express.Router();
 const {
   register,
   login,
+  logout,
   getMe,
   updateProfile,
   changePassword,
@@ -30,6 +31,7 @@ const {
 // ── Public routes ──────────────────────────────────────────────────────────
 router.post('/register',      registerRules,       validate, register);
 router.post('/login',         loginRules,          validate, login);
+router.post('/logout',                                       logout);
 router.post('/check-email',                                  checkEmail);
 router.post('/reset-password', passwordResetRules, validate, resetPassword);
 

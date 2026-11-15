@@ -140,10 +140,20 @@ const profileRules = [
     .matches(/^[a-zA-Z0-9_]{3,20}$/)
     .withMessage('Use 3–20 letters, numbers, or underscores.'),
 
+  body('email')
+    .optional()
+    .trim()
+    .isEmail().withMessage('Enter a valid email address.')
+    .normalizeEmail({ gmail_remove_dots: false }),
+
   body('bio')
     .optional()
     .trim()
     .isLength({ max: 280 }).withMessage('Bio cannot exceed 280 characters.'),
+
+  body('profileImage')
+    .optional()
+    .trim(),
 ];
 
 // ── Password change rules ──────────────────────────────────────────────────
