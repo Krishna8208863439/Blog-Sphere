@@ -40,6 +40,7 @@ async function apiFetch(path, options = {}) {
     const res = await fetch(`${API_BASE}${path}`, {
       ...options,
       headers,
+      credentials: 'include', // Send and receive HttpOnly cookies
     });
     const json = await res.json();
     return json;
@@ -171,6 +172,13 @@ const BlogStore = {
     cacheUser(null);
   },
 
+  async logout() {
+    try {
+      await apiFetch('/auth/logout', { method: 'POST' });
+    } catch (_) {}
+    this.clearSession();
+  },
+
   // ── Auth ─────────────────────────────────────────────────────────────
 
   /**
@@ -209,7 +217,6 @@ const BlogStore = {
    * Refresh user profile from the server and update cache.
    */
   async refreshCurrentUser() {
-    if (!getStoredToken()) return null;
     const res = await apiFetch('/auth/me');
     if (!res.success) {
       this.clearSession();

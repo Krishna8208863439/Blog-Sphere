@@ -23,7 +23,7 @@ function renderSidebar(active) {
     ['overview', 'dashboard.html',         'fa-solid fa-table-cells',              'Overview'],
     ['posts',    'dashboard.html#posts',    'fa-solid fa-newspaper',               'My posts'],
     ['create',   'create-blog.html',        'fa-solid fa-pen-nib',                 'Create blog'],
-    ['profile',  'dashboard.html#profile',  'fa-solid fa-user',                    'Profile'],
+    ['profile',  'profile.html',            'fa-solid fa-user',                    'Profile'],
   ];
 
   sidebar.innerHTML = `
@@ -137,8 +137,8 @@ function postRow(blog) {
 // DASHBOARD — main initialisation
 // ═════════════════════════════════════════════════════════════════════════════
 async function initDashboard() {
-  // Auth guard — synchronous check on cached user
-  const user = BlogStore.currentUser();
+  // Backend session check with GET /api/auth/me
+  const user = await BlogStore.refreshCurrentUser();
   if (!user) {
     const next = window.location.pathname.split('/').pop()
       + window.location.search

@@ -221,10 +221,14 @@ function toggleTheme() {
   applyTheme(BlogStore.getTheme() === 'dark' ? 'light' : 'dark');
 }
 
-function logout() {
-  BlogStore.clearSession();
+async function logout() {
+  if (window.BlogStore && typeof BlogStore.logout === 'function') {
+    await BlogStore.logout();
+  } else {
+    BlogStore.clearSession();
+  }
   flash('You have been logged out.');
-  window.location.href = 'index.html';
+  window.location.href = 'login.html';
 }
 
 function renderMarketingHeader() {
@@ -239,9 +243,11 @@ function renderMarketingHeader() {
   }).join('');
   const account = user
     ? `<a class="btn btn-ghost" href="dashboard.html">Dashboard</a>
+       <a class="btn btn-ghost" href="create-blog.html">Create Blog</a>
+       <a class="btn btn-ghost" href="profile.html">My Profile</a>
        <button class="btn btn-primary" type="button" data-logout>Log out</button>`
-    : `<a class="btn btn-ghost" href="login.html">Sign in</a>
-       <a class="btn btn-primary" href="register.html">Get started</a>`;
+    : `<a class="btn btn-ghost" href="login.html">Login</a>
+       <a class="btn btn-primary" href="register.html">Register</a>`;
 
   header.className = 'site-header';
   header.innerHTML = `

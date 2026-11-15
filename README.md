@@ -20,11 +20,14 @@ A complete, modern, and fully responsive blogging platform built with **HTML5**,
 ## Features
 
 ### Authentication & Authorization
-- JWT-based authentication with bcrypt password hashing
-- Register with full name, email, username, and password
-- Login with "Remember me" session selection
-- Profile management and password update
-- Route and API endpoint protection with ownership verification (users can only edit/delete their own blogs)
+- Secure JWT-based authentication with bcrypt password hashing
+- **HttpOnly, Secure Cookies** for cross-site script-safe authentication
+- Rate limiting on login and registration endpoints (`express-rate-limit`)
+- Helmet security headers and CORS protection
+- Protected dashboard routes (`dashboard.html`, `create-blog.html`, `profile.html`) verified against `GET /api/auth/me`
+- Full user profile management page (`profile.html`) with name, username, email, avatar, bio, and password change
+- Logout endpoint clearing authentication cookie and local state with redirect to `login.html`
+- Strict author isolation on `GET /api/blogs/my-blogs` and ownership checks on update/delete
 
 ### Full CRUD Operations
 - **Create**: Write stories with title, description, rich content, category, cover image preview/upload, and choose draft or immediate publish
@@ -63,8 +66,12 @@ A complete, modern, and fully responsive blogging platform built with **HTML5**,
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
 | `POST` | `/api/auth/register` | Register new user | No |
-| `POST` | `/api/auth/login` | Authenticate user & get JWT | No |
-| `GET` | `/api/auth/me` | Get current user profile | Yes |
+| `POST` | `/api/auth/login` | Authenticate user, get JWT & set HttpOnly cookie | No |
+| `POST` | `/api/auth/logout` | Clear authentication cookie | No |
+| `GET` | `/api/auth/me` | Get current user profile (session verification) | Yes |
+| `GET` | `/api/users/profile` | Get logged-in user profile details | Yes |
+| `PUT` | `/api/users/profile` | Update user profile (name, username, email, bio, image) | Yes |
+| `PATCH`| `/api/users/change-password` | Change user password | Yes |
 | `POST` | `/api/blogs` | Create a new blog | Yes |
 | `GET` | `/api/blogs` | Get published blogs (`search`, `category`, `page`, `limit`) | No |
 | `GET` | `/api/blogs/:id` | Get individual blog details | No (Drafts: Owner only) |
@@ -112,7 +119,32 @@ npx serve blog-application
 
 ## Testing Instructions
 
-To automatically verify all 18 requirements against live MongoDB, run:
+### 1. Authentication & User Management Tests
+Run the comprehensive authentication test suite:
+```bash
+node backend/test_auth.js
+```
+This tests:
+1. Register new user
+2. Duplicate email prevention
+3. Register second user
+4. Login with valid credentials and verify signed JWT in HttpOnly cookie
+5. Login with invalid credentials rejection (401)
+6. Verify JWT authentication (GET /api/auth/me)
+7. Prevent unauthorized access without login (401)
+8. Authorized access with Bearer token / Cookie
+9. User A sees only User A's blogs in /api/blogs/my-blogs
+10. User B sees only User B's blogs in /api/blogs/my-blogs
+11. Unauthorized blog modification prevention (403 Forbidden)
+12. Update profile information (PUT /api/users/profile)
+13. Password change (PATCH /api/users/change-password) & verify with new login
+14. Logout clears HttpOnly cookie
+15. Prevent access to protected routes after logout
+16. Reject expired and malformed JWTs (401)
+17. Reject invalid cookie authentication (401)
+
+### 2. Full CRUD, Search & Category Filter Tests
+Run the CRUD test suite:
 ```bash
 node backend/test_crud.js
 ```

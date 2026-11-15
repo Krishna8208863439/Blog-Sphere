@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BlogSphere user profile — view and manage your account details and password.">
+  <title>User Profile — BlogSphere</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Outfit:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body data-page="profile">
+
+  <!-- Skip link -->
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <!-- Page loader -->
+  <div id="page-loader" class="page-loader" aria-hidden="true">
+    <div class="loader-mark"><span></span><p>Loading…</p></div>
+  </div>
+
+  <!-- No-JS warning -->
+  <noscript>
+    <p class="noscript">BlogSphere requires JavaScript. Please enable it in your browser settings.</p>
+  </noscript>
+
+  <!-- App shell -->
+  <div class="app-shell" id="app-shell">
+
+    <!-- Mobile sidebar backdrop -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop" aria-hidden="true"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar" aria-label="Dashboard navigation"></aside>
+
+    <!-- Main area -->
+    <div class="app-main" id="main-content">
+
+      <!-- Top bar -->
+      <header class="app-topbar" role="banner">
+        <button
+          class="sidebar-toggle icon-btn"
+          type="button"
+          aria-expanded="false"
+          aria-controls="sidebar"
+          aria-label="Open navigation"
+        >
+          <i class="fa-solid fa-bars" aria-hidden="true"></i>
+        </button>
+
+        <h1 id="view-title">User Profile</h1>
+
+        <div class="topbar-actions">
+          <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch to dark mode">
+            <i class="fa-solid fa-moon" aria-hidden="true"></i>
+          </button>
+          <a class="btn btn-primary" href="create-blog.html">
+            <i class="fa-solid fa-pen-nib" aria-hidden="true"></i>
+            New story
+          </a>
+        </div>
+      </header>
+
+      <!-- Profile content -->
+      <div style="padding:1.5rem 2rem 3rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <h2 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:0.3rem;">Account &amp; Profile</h2>
+            <p style="color:var(--muted);font-size:0.95rem;">Manage your public persona, credentials, and story statistics.</p>
+          </div>
+          <div style="display:flex;gap:0.75rem;">
+            <a href="dashboard.html" class="btn btn-ghost">
+              <i class="fa-solid fa-table-cells" aria-hidden="true"></i> Dashboard
+            </a>
+            <a href="create-blog.html" class="btn btn-primary">
+              <i class="fa-solid fa-plus" aria-hidden="true"></i> Create Blog
+            </a>
+          </div>
+        </div>
+
+        <div class="profile-grid">
+
+          <!-- Left column: Profile Edit & Password Change -->
+          <div class="stack" style="display:flex;flex-direction:column;gap:1.5rem;">
+            
+            <!-- Edit Profile Panel -->
+            <div class="panel">
+              <h3 style="font-weight:700;margin-bottom:1.2rem;display:flex;align-items:center;gap:0.5rem;">
+                <i class="fa-regular fa-id-badge" style="color:var(--accent);"></i> Edit Profile
+              </h3>
+              <form id="profile-form" novalidate autocomplete="on">
+                <div class="field">
+                  <label for="profile-fullName">Full Name <span style="color:var(--danger)">*</span></label>
+                  <input id="profile-fullName" name="fullName" type="text" required autocomplete="name" placeholder="Your full name">
+                  <small class="field-error" data-error-for="fullName" role="alert"></small>
+                </div>
+                <div class="field">
+                  <label for="profile-username">Username <span style="color:var(--danger)">*</span></label>
+                  <input id="profile-username" name="username" type="text" required autocomplete="username" placeholder="Unique username">
+                  <small class="field-error" data-error-for="username" role="alert"></small>
+                </div>
+                <div class="field">
+                  <label for="profile-email">Email Address <span style="color:var(--danger)">*</span></label>
+                  <input id="profile-email" name="email" type="email" required autocomplete="email" placeholder="you@example.com">
+                  <small class="field-error" data-error-for="email" role="alert"></small>
+                  <small class="hint" style="color:var(--muted);font-size:0.8rem;display:block;margin-top:0.3rem;">Updating email requires it to be unique across all accounts.</small>
+                </div>
+                <div class="field">
+                  <label for="profile-image">Profile Avatar Image URL <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+                  <input id="profile-image" name="profileImage" type="url" placeholder="https://example.com/avatar.jpg">
+                  <small class="field-error" data-error-for="profileImage" role="alert"></small>
+                </div>
+                <div class="field">
+                  <label for="profile-bio">Bio <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+                  <textarea id="profile-bio" name="bio" placeholder="A short description shown on your stories." maxlength="280" rows="3"></textarea>
+                  <small class="field-error" data-error-for="bio" role="alert"></small>
+                </div>
+                <button class="btn btn-primary" type="submit" style="padding:0.6rem 1.4rem;">
+                  <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Save Changes
+                </button>
+              </form>
+            </div>
+
+            <!-- Change Password Panel -->
+            <div class="panel">
+              <h3 style="font-weight:700;margin-bottom:1.2rem;display:flex;align-items:center;gap:0.5rem;">
+                <i class="fa-solid fa-shield-halved" style="color:var(--accent);"></i> Change Password
+              </h3>
+              <form id="password-form" novalidate autocomplete="on">
+                <div class="field">
+                  <label for="current-password">Current Password <span style="color:var(--danger)">*</span></label>
+                  <div class="password-field">
+                    <input id="current-password" name="currentPassword" type="password" required autocomplete="current-password" placeholder="Enter current password">
+                    <button class="ghost-eye" type="button" data-toggle-password="current-password" aria-label="Show password" aria-pressed="false">
+                      <i class="fa-regular fa-eye" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                  <small class="field-error" data-error-for="currentPassword" role="alert"></small>
+                </div>
+                <div class="field">
+                  <label for="new-pass">New Password <span style="color:var(--danger)">*</span></label>
+                  <div class="password-field">
+                    <input id="new-pass" name="newPassword" type="password" required autocomplete="new-password" placeholder="At least 8 characters with letter & number">
+                    <button class="ghost-eye" type="button" data-toggle-password="new-pass" aria-label="Show password" aria-pressed="false">
+                      <i class="fa-regular fa-eye" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                  <small class="field-error" data-error-for="newPassword" role="alert"></small>
+                </div>
+                <div class="field">
+                  <label for="confirm-pass">Confirm New Password <span style="color:var(--danger)">*</span></label>
+                  <div class="password-field">
+                    <input id="confirm-pass" name="confirmPassword" type="password" required autocomplete="new-password" placeholder="Repeat your new password">
+                    <button class="ghost-eye" type="button" data-toggle-password="confirm-pass" aria-label="Show password" aria-pressed="false">
+                      <i class="fa-regular fa-eye" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                  <small class="field-error" data-error-for="confirmPassword" role="alert"></small>
+                </div>
+                <button class="btn btn-primary" type="submit" style="padding:0.6rem 1.4rem;">
+                  <i class="fa-solid fa-key" aria-hidden="true"></i> Update Password
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Right column: User Card & Blog Stats -->
+          <div>
+            <!-- Member Overview Card -->
+            <div class="member-card" style="text-align:center;padding:2rem 1.5rem;">
+              <div class="avatar" id="profile-avatar" aria-hidden="true" style="width:72px;height:72px;font-size:1.6rem;margin:0 auto 0.75rem;">?</div>
+              <strong id="profile-name" style="font-size:1.4rem;display:block;margin:0.2rem 0 0.1rem;">User Name</strong>
+              <span id="profile-handle" style="color:rgba(246,243,238,0.7);font-size:0.95rem;">@username</span>
+              <p id="profile-bio-display" style="margin-top:0.75rem;font-size:0.95rem;line-height:1.5;"></p>
+              
+              <div style="margin-top:1.2rem;border-top:1px solid rgba(255,255,255,0.15);padding-top:1rem;">
+                <small id="profile-email-display" style="display:block;color:rgba(246,243,238,0.75);font-size:0.88rem;word-break:break-all;">
+                  <i class="fa-regular fa-envelope" aria-hidden="true"></i> email@example.com
+                </small>
+                <small id="member-since" style="display:block;margin-top:0.4rem;color:rgba(246,243,238,0.6);font-size:0.85rem;">
+                  <i class="fa-regular fa-calendar" aria-hidden="true"></i> Member since ...
+                </small>
+              </div>
+            </div>
+
+            <!-- Blog Stats Card -->
+            <div class="panel" style="margin-top:1.2rem;">
+              <h3 style="font-weight:700;margin-bottom:0.9rem;font-size:1.1rem;display:flex;align-items:center;gap:0.5rem;">
+                <i class="fa-solid fa-chart-simple" style="color:var(--accent);"></i> Blog Statistics
+              </h3>
+              <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:0.6rem;text-align:center;">
+                <div style="background:var(--bg);padding:0.85rem 0.4rem;border-radius:12px;border:1px solid var(--border);">
+                  <div style="font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Total</div>
+                  <strong id="profile-stat-total" style="font-size:1.4rem;display:block;margin-top:0.2rem;">0</strong>
+                </div>
+                <div style="background:var(--bg);padding:0.85rem 0.4rem;border-radius:12px;border:1px solid var(--border);">
+                  <div style="font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Published</div>
+                  <strong id="profile-stat-published" style="font-size:1.4rem;display:block;margin-top:0.2rem;color:var(--accent);">0</strong>
+                </div>
+                <div style="background:var(--bg);padding:0.85rem 0.4rem;border-radius:12px;border:1px solid var(--border);">
+                  <div style="font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Drafts</div>
+                  <strong id="profile-stat-draft" style="font-size:1.4rem;display:block;margin-top:0.2rem;color:var(--muted);">0</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="panel" style="margin-top:1.2rem;">
+              <h3 style="font-weight:700;margin-bottom:0.8rem;font-size:1.1rem;">Quick Actions</h3>
+              <div style="display:grid;gap:0.4rem;">
+                <a href="dashboard.html" class="btn btn-ghost" style="justify-content:flex-start;gap:0.6rem;">
+                  <i class="fa-solid fa-table-cells" aria-hidden="true"></i> View Dashboard
+                </a>
+                <a href="index.html" class="btn btn-ghost" style="justify-content:flex-start;gap:0.6rem;">
+                  <i class="fa-solid fa-house" aria-hidden="true"></i> View Public Site
+                </a>
+                <a href="create-blog.html" class="btn btn-ghost" style="justify-content:flex-start;gap:0.6rem;">
+                  <i class="fa-solid fa-pen-nib" aria-hidden="true"></i> Write a New Story
+                </a>
+                <button class="btn btn-ghost" type="button" data-logout style="justify-content:flex-start;gap:0.6rem;color:var(--danger);">
+                  <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i> Log out
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div><!-- /profile content -->
+
+    </div><!-- /app-main -->
+  </div><!-- /app-shell -->
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>

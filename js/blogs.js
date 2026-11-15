@@ -699,7 +699,7 @@ function resizeImage(file) {
 // BLOG EDITOR
 // ═════════════════════════════════════════════════════════════════════════════
 async function initEditor() {
-  const user = BlogStore.currentUser();
+  const user = await BlogStore.refreshCurrentUser();
   if (!user) {
     window.location.replace('login.html?next=create-blog.html');
     return;
